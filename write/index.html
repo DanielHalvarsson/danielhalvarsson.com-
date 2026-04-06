@@ -1235,7 +1235,7 @@ productivity dynamics.
           if (stream.match('/*')) { state.inBlockComment = true; return 'comment'; }
 
           // Headings: = / == / === at line start
-          if (stream.sol() && stream.match(/^={1,6}\s/)) { return 'heading'; }
+          if (stream.sol() && stream.match(/^={1,6}\s/)) { return 'header'; }
 
           // #keyword or #function — the defining Typst feature
           if (stream.peek() === '#') {
@@ -1261,14 +1261,14 @@ productivity dynamics.
           }
 
           // Labels: <label>
-          if (stream.match(/^<[a-zA-Z0-9_:-]+>/)) { return 'typeName'; }
+          if (stream.match(/^<[a-zA-Z0-9_:-]+>/)) { return 'type'; }
 
           // Numbers
           if (stream.match(/^-?[0-9]+(\.[0-9]+)?(pt|em|cm|mm|in|%|fr)?/)) { return 'number'; }
 
           // Bold *text* and _italic_
           if (stream.match('*')) { return 'strong'; }
-          if (stream.match('_')) { return 'emphasis'; }
+          if (stream.match('_')) { return 'em'; }
 
           stream.next();
           return null;
@@ -1320,7 +1320,7 @@ productivity dynamics.
               ...closeBracketsKeymap,
               indentWithTab,
             ]),
-            typstLanguage,
+            typstLanguage.extension,
             writeTheme,
             syntaxHighlighting(writeHighlightStyle),
             updateListener,
