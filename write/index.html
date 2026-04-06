@@ -1,0 +1,2229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Write — Daniel Halvarsson</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Typst WASM compiler -->
+  <script type="module"
+    src="https://cdn.jsdelivr.net/npm/@myriaddreamin/typst.ts/dist/esm/contrib/all-in-one-lite.bundle.js"
+    id="typst-loader"></script>
+
+  <style>
+    /* ───────────────────────────────────────────
+       Design tokens — danielhalvarsson.com system
+       ─────────────────────────────────────────── */
+    :root {
+      --slate-950: #0b0d11;
+      --slate-900: #12151b;
+      --slate-800: #1a1e27;
+      --slate-700: #252a36;
+      --slate-600: #343b4a;
+      --slate-500: #4a5368;
+      --slate-400: #6b7690;
+      --slate-300: #8e99b0;
+      --slate-200: #b3bccf;
+      --slate-100: #d6dce8;
+      --amber-500: #d4a574;
+      --amber-400: #e0b989;
+      --amber-300: #ebd0a8;
+      --amber-600: #c08c55;
+      --red-400: #e57373;
+      --green-400: #81c784;
+      --surface: var(--slate-900);
+      --surface-raised: var(--slate-800);
+      --surface-overlay: var(--slate-700);
+      --border: var(--slate-700);
+      --border-subtle: var(--slate-800);
+      --text-primary: var(--slate-100);
+      --text-secondary: var(--slate-400);
+      --text-muted: var(--slate-500);
+      --accent: var(--amber-500);
+      --accent-dim: rgba(212, 165, 116, 0.12);
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Outfit', system-ui, sans-serif;
+      --font-mono: 'DM Mono', 'Menlo', monospace;
+      --radius: 4px;
+      --transition: 150ms ease;
+    }
+
+    /* ───── Reset & base ───── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--slate-950);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      font-size: 14px;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection {
+      background: var(--accent-dim);
+      color: var(--amber-300);
+    }
+
+    /* ───── App shell ───── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ───── Header ───── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px;
+      padding: 0 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+
+    .doc-title {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      background: none;
+      border: 1px solid transparent;
+      padding: 3px 8px;
+      border-radius: var(--radius);
+      outline: none;
+      transition: border-color var(--transition), color var(--transition);
+      min-width: 200px;
+    }
+
+    .doc-title:hover { border-color: var(--border); }
+    .doc-title:focus {
+      border-color: var(--accent);
+      color: var(--text-primary);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      color: var(--text-primary);
+      border-color: var(--slate-600);
+      background: var(--surface-raised);
+    }
+
+    .btn-accent {
+      color: var(--amber-500);
+      border-color: var(--amber-600);
+    }
+
+    .btn-accent:hover {
+      background: var(--accent-dim);
+      color: var(--amber-400);
+    }
+
+    .separator {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+      margin: 0 8px;
+    }
+
+    /* ───── Main workspace ───── */
+    main {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ───── Editor pane ───── */
+    #editor-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--surface);
+      position: relative;
+    }
+
+    #editor-container {
+      flex: 1;
+      overflow: auto;
+      padding: 0;
+    }
+
+    /* CodeMirror theme overrides */
+    .cm-editor {
+      height: 100%;
+      font-family: var(--font-mono) !important;
+      font-size: 14px !important;
+      line-height: 1.65 !important;
+      background: var(--surface) !important;
+    }
+
+    .cm-editor .cm-content {
+      padding: 24px 32px !important;
+      max-width: 720px;
+      caret-color: var(--amber-500) !important;
+    }
+
+    .cm-editor .cm-line { padding: 0 !important; }
+
+    .cm-editor .cm-gutters {
+      background: var(--surface) !important;
+      border-right: 1px solid var(--border-subtle) !important;
+      color: var(--text-muted) !important;
+      font-size: 12px !important;
+      min-width: 48px !important;
+    }
+
+    .cm-editor .cm-activeLineGutter {
+      background: transparent !important;
+      color: var(--text-secondary) !important;
+    }
+
+    .cm-editor .cm-activeLine {
+      background: var(--accent-dim) !important;
+    }
+
+    .cm-editor .cm-selectionBackground {
+      background: rgba(212, 165, 116, 0.15) !important;
+    }
+
+    .cm-editor.cm-focused .cm-selectionBackground {
+      background: rgba(212, 165, 116, 0.2) !important;
+    }
+
+    .cm-editor .cm-cursor {
+      border-left-color: var(--amber-500) !important;
+      border-left-width: 2px !important;
+    }
+
+    .cm-editor .cm-matchingBracket {
+      background: rgba(212, 165, 116, 0.25) !important;
+      color: var(--amber-400) !important;
+    }
+
+    /* Fallback textarea (before CM loads) */
+    #editor-fallback {
+      width: 100%;
+      height: 100%;
+      background: var(--surface);
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.65;
+      border: none;
+      outline: none;
+      padding: 24px 32px;
+      resize: none;
+      tab-size: 2;
+    }
+
+    /* ───── Divider ───── */
+    #divider {
+      width: 1px;
+      background: var(--border);
+      cursor: col-resize;
+      flex-shrink: 0;
+      position: relative;
+      transition: background var(--transition);
+    }
+
+    #divider::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      left: -3px; right: -3px;
+    }
+
+    #divider:hover, #divider.dragging {
+      background: var(--accent);
+    }
+
+    /* ───── Preview pane ───── */
+    #preview-pane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--slate-950);
+    }
+
+    #preview-container {
+      flex: 1;
+      overflow: auto;
+      padding: 32px;
+      display: flex;
+      justify-content: center;
+    }
+
+    #preview-content {
+      max-width: 680px;
+      width: 100%;
+    }
+
+    #preview-content svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 2px;
+      background: #ffffff;
+      padding: 40px;
+      border-radius: 2px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Preview placeholder */
+    .preview-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      gap: 12px;
+    }
+
+    .preview-placeholder .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ───── Status bar ───── */
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 28px;
+      padding: 0 16px;
+      background: var(--surface);
+      border-top: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .status-left, .status-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: background var(--transition);
+    }
+
+    .status-dot.ready { background: var(--green-400); }
+    .status-dot.compiling { background: var(--amber-500); }
+    .status-dot.error { background: var(--red-400); }
+
+    /* ───── Document list overlay ───── */
+    #doc-list-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(11, 13, 17, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 80px;
+      z-index: 100;
+    }
+
+    #doc-list-overlay.visible { display: flex; }
+
+    #doc-list {
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 480px;
+      max-height: 400px;
+      overflow-y: auto;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+    }
+
+    .doc-list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .doc-list-header h3 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .doc-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background var(--transition);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .doc-item:last-child { border-bottom: none; }
+    .doc-item:hover { background: var(--surface-overlay); }
+
+    .doc-item-name {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .doc-item-date {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .doc-item-delete {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 3px;
+      opacity: 0;
+      transition: all var(--transition);
+    }
+
+    .doc-item:hover .doc-item-delete { opacity: 1; }
+    .doc-item-delete:hover { color: var(--red-400); background: rgba(229, 115, 115, 0.1); }
+
+    .doc-empty {
+      padding: 32px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    /* ───── Keyboard shortcut hint ───── */
+    kbd {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: var(--surface-overlay);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 1px 5px;
+      color: var(--text-muted);
+    }
+
+    /* ───── Welcome overlay ───── */
+    #welcome-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--slate-950);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    #welcome-overlay.dismissing {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .welcome-content {
+      text-align: center;
+      max-width: 440px;
+      padding: 0 24px;
+    }
+
+    .welcome-brand {
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+      margin-bottom: 20px;
+    }
+
+    .welcome-line {
+      width: 40px;
+      height: 1px;
+      background: var(--amber-600);
+      margin: 0 auto 24px;
+    }
+
+    .welcome-text {
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .welcome-detail {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 36px;
+    }
+
+    .welcome-start {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--amber-500);
+      background: none;
+      border: 1px solid var(--amber-600);
+      padding: 10px 32px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all var(--transition);
+      letter-spacing: 0.03em;
+    }
+
+    .welcome-start:hover {
+      background: var(--accent-dim);
+      color: var(--amber-400);
+      border-color: var(--amber-500);
+    }
+
+    .welcome-footer {
+      margin-top: 48px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .welcome-footer a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border);
+      transition: all var(--transition);
+    }
+
+    .welcome-footer a:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    /* ───── Auth indicator ───── */
+    .auth-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--text-muted);
+      padding: 3px 10px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      transition: all var(--transition);
+      text-decoration: none;
+    }
+
+    .auth-indicator:hover {
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    .auth-indicator.connected {
+      color: var(--green-400);
+      cursor: default;
+    }
+
+    .auth-indicator.connected:hover {
+      border-color: transparent;
+    }
+
+    .auth-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .auth-indicator.connected .auth-dot {
+      background: var(--green-400);
+    }
+
+    .status-mode {
+      color: var(--text-muted);
+    }
+
+    .status-mode.connected {
+      color: var(--green-400);
+    }
+
+    .btn-signout {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      padding: 3px 8px;
+      transition: color var(--transition);
+    }
+
+    .btn-signout:hover {
+      color: var(--text-secondary);
+    }
+
+    /* ───── Cmd+K assist panel ───── */
+    #assist-panel {
+      display: none;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--slate-800);
+      border-top: 1px solid var(--accent);
+      z-index: 50;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      max-height: 50%;
+      overflow: hidden;
+      flex-direction: column;
+    }
+
+    #assist-panel.active {
+      display: flex;
+    }
+
+    .assist-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px 8px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .assist-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--amber-500);
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .assist-selection-preview {
+      font-size: 11px;
+      color: var(--text-muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+      font-style: italic;
+    }
+
+    .assist-close {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 6px;
+      font-family: var(--font-mono);
+      transition: color var(--transition);
+    }
+
+    .assist-close:hover {
+      color: var(--text-secondary);
+    }
+
+    .assist-input-row {
+      display: flex;
+      align-items: center;
+      padding: 8px 16px;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    #assist-input {
+      flex: 1;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--text-primary);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    #assist-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    #assist-input:focus {
+      border-color: var(--accent);
+    }
+
+    .assist-submit {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--amber-500);
+      background: none;
+      border: 1px solid var(--amber-600);
+      padding: 7px 14px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all var(--transition);
+      white-space: nowrap;
+    }
+
+    .assist-submit:hover {
+      background: var(--accent-dim);
+      color: var(--amber-400);
+    }
+
+    .assist-submit:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .assist-response {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 16px 8px;
+      min-height: 0;
+    }
+
+    .assist-response-text {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--slate-200);
+      white-space: pre-wrap;
+      padding: 8px 0;
+    }
+
+    .assist-response-text:empty {
+      display: none;
+    }
+
+    .assist-actions {
+      display: none;
+      padding: 8px 16px 12px;
+      gap: 8px;
+      border-top: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .assist-actions.visible {
+      display: flex;
+    }
+
+    .assist-actions .btn {
+      font-size: 12px;
+      padding: 5px 14px;
+    }
+
+    .assist-streaming .assist-response-text::after {
+      content: '▊';
+      color: var(--amber-500);
+      animation: blink 0.8s step-end infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <header>
+    <div class="header-left">
+      <span class="brand">Write</span>
+      <input type="text" class="doc-title" id="doc-title" value="untitled.typ" spellcheck="false">
+    </div>
+    <div class="header-right">
+      <button class="btn" id="btn-docs" title="Documents (Ctrl+O)">docs</button>
+      <button class="btn" id="btn-new" title="New document">new</button>
+      <div class="separator"></div>
+      <button class="btn" id="btn-save-file" title="Save to disk (Ctrl+Shift+S)">save ↓</button>
+      <button class="btn" id="btn-open-file" title="Open from disk">open ↑</button>
+      <div class="separator"></div>
+      <button class="btn btn-accent" id="btn-export" title="Export PDF">pdf</button>
+      <div class="separator"></div>
+      <a href="/write/auth.html" class="auth-indicator" id="auth-indicator" title="Sign in for connected mode">
+        <span class="auth-dot"></span>
+        <span id="auth-label">local</span>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div id="editor-pane">
+      <div id="editor-container">
+        <textarea id="editor-fallback" spellcheck="false"></textarea>
+      </div>
+      <!-- Cmd/Ctrl+Shift+L assist panel -->
+      <div id="assist-panel">
+        <div class="assist-header">
+          <span class="assist-label">⌘⇧L</span>
+          <span class="assist-selection-preview" id="assist-selection-preview"></span>
+          <button class="assist-close" id="assist-close" title="Close (Esc)">✕</button>
+        </div>
+        <div class="assist-input-row">
+          <input type="text" id="assist-input" placeholder="tighten this, expand, formalize, rewrite…" spellcheck="false" autocomplete="off">
+          <button class="assist-submit" id="assist-submit">go</button>
+        </div>
+        <div class="assist-response">
+          <div class="assist-response-text" id="assist-response-text"></div>
+        </div>
+        <div class="assist-actions" id="assist-actions">
+          <button class="btn btn-accent" id="assist-accept">accept</button>
+          <button class="btn" id="assist-reject">reject</button>
+          <button class="btn" id="assist-copy">copy</button>
+        </div>
+      </div>
+    </div>
+    <div id="divider"></div>
+    <div id="preview-pane">
+      <div id="preview-container">
+        <div id="preview-content">
+          <div class="preview-placeholder" id="preview-placeholder">
+            <div class="spinner"></div>
+            <span>Loading Typst compiler…</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="status-left">
+      <span class="status-indicator">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="status-text">initializing</span>
+      </span>
+      <span id="status-compile-time"></span>
+    </div>
+    <div class="status-right">
+      <span id="status-cursor">Ln 1, Col 1</span>
+      <span class="status-mode" id="status-mode">local</span>
+      <span>typst</span>
+    </div>
+  </footer>
+</div>
+
+<!-- Welcome overlay -->
+<div id="welcome-overlay">
+  <div class="welcome-content">
+    <div class="welcome-brand">Write</div>
+    <div class="welcome-line"></div>
+    <p class="welcome-text">
+      A local-first writing environment for academic documents.
+      Powered by Typst, compiled to WebAssembly, running entirely in your browser.
+    </p>
+    <p class="welcome-detail">
+      Nothing leaves your machine. No account, no server, no subscription.
+      Your documents are stored in your browser and belong to you.
+    </p>
+    <button class="welcome-start" id="btn-welcome-start">start writing</button>
+    <div class="welcome-footer">
+      <a href="https://danielhalvarsson.com">danielhalvarsson.com</a>
+    </div>
+  </div>
+</div>
+
+<!-- Document list overlay -->
+<div id="doc-list-overlay">
+  <div id="doc-list">
+    <div class="doc-list-header">
+      <h3>Documents</h3>
+      <button class="btn" id="btn-close-docs">close</button>
+    </div>
+    <div id="doc-list-items"></div>
+  </div>
+</div>
+
+<script type="module">
+  // ─────────────────────────────────────────────────
+  // State
+  // ─────────────────────────────────────────────────
+  const STORAGE_KEY = 'write-docs';
+  const CURRENT_KEY = 'write-current';
+  const AUTH_TOKEN_KEY = 'write-auth-token';
+  const API_BASE = '/write/api';
+  let currentDocId = null;
+  let compilerReady = false;
+  let compileTimeout = null;
+  let editorView = null; // Will hold CodeMirror instance
+  let isConnected = false; // Authenticated + server-connected mode
+  let ws = null; // WebSocket connection
+
+  const $ = (sel) => document.querySelector(sel);
+  const $$ = (sel) => document.querySelectorAll(sel);
+
+  // ─────────────────────────────────────────────────
+  // Sample document
+  // ─────────────────────────────────────────────────
+  const SAMPLE_DOC = `// Write — a local-first Typst editor
+// danielhalvarsson.com/write
+
+#set document(title: "Working Paper Draft", author: "Daniel Halvarsson")
+#set page(margin: (x: 2.5cm, y: 3cm), numbering: "1")
+#set text(font: "New Computer Modern", size: 11pt)
+#set par(justify: true, leading: 0.65em)
+#set heading(numbering: "1.")
+
+#align(center)[
+  #text(size: 18pt, weight: "bold")[
+    Firm Dynamics and Structural Transformation
+  ]
+
+  #v(8pt)
+
+  #text(size: 12pt, fill: gray.darken(20%))[
+    Daniel Halvarsson
+  ]
+
+  #v(4pt)
+
+  #text(size: 10pt, fill: gray)[
+    The Ratio Institute, Stockholm \\\\
+    Draft — April 2026
+  ]
+]
+
+#v(16pt)
+
+= Introduction
+
+The relationship between firm-level productivity dynamics
+and aggregate structural change remains a central question
+in empirical economics. While the decomposition of labor
+productivity growth into within-firm, between-firm, and
+entry/exit components is well established, the mechanisms
+driving reallocation across sectors are less understood.
+
+This paper contributes to the literature by leveraging
+novel administrative microdata from Swedish annual reports
+to trace firm-level transitions across sectors at high
+frequency.
+
+= Theoretical Framework
+
+Consider a firm $i$ in sector $s$ at time $t$, with
+productivity $omega_(i,t)$ drawn from a sector-specific
+distribution $F_s$. The firm's output is given by:
+
+$ Y_(i,t) = A_(s,t) dot K_(i,t)^alpha dot L_(i,t)^beta dot e^(omega_(i,t)) $
+
+where $A_(s,t)$ is sector-level TFP, $K$ and $L$ are
+capital and labor inputs, and $alpha + beta < 1$ under
+decreasing returns to scale.
+
+The key insight is that reallocation occurs when the
+shadow value of resources differs across firms:
+
+$ Delta W = sum_i (omega_(i,t+1) - overline(omega)_t) dot Delta s_(i,t) $
+
+== Data and Measurement
+
+The empirical strategy relies on three data sources:
+
+#table(
+  columns: (auto, 1fr, auto),
+  inset: 8pt,
+  align: (left, left, center),
+  stroke: 0.5pt + gray.lighten(60%),
+  [*Source*], [*Coverage*], [*Period*],
+  [XBRL annual reports], [SME universe, ~400K firms], [2020–2025],
+  [SCB/LISA], [Population-wide register data], [2001–2023],
+  [Platsbanken], [All public job advertisements], [2006–2025],
+)
+
+#v(8pt)
+
+The XBRL corpus provides granular financial data at the
+firm level, including revenue by segment, employment,
+and balance sheet items — enabling direct measurement of
+reallocation that aggregate data cannot capture.
+
+= Preliminary Results
+
+Figure 1 will present the decomposition of productivity
+growth across two-digit SNI sectors, highlighting the
+role of between-sector reallocation in driving aggregate
+productivity dynamics.
+
+// TODO: Add figure from Python pipeline
+// #image("figures/decomposition.svg")
+
+= References
+
+// #bibliography("refs.bib", style: "apa")
+`;
+
+  // ─────────────────────────────────────────────────
+  // Persistence (localStorage)
+  // ─────────────────────────────────────────────────
+  function loadDocs() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    } catch { return {}; }
+  }
+
+  function saveDocs(docs) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(docs));
+  }
+
+  function loadCurrentId() {
+    return localStorage.getItem(CURRENT_KEY);
+  }
+
+  function saveCurrentId(id) {
+    localStorage.setItem(CURRENT_KEY, id);
+  }
+
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  }
+
+  function createDoc(title, content) {
+    const docs = loadDocs();
+    const id = generateId();
+    docs[id] = {
+      title,
+      content,
+      created: Date.now(),
+      updated: Date.now(),
+    };
+    saveDocs(docs);
+    return id;
+  }
+
+  function updateDoc(id, updates) {
+    const docs = loadDocs();
+    if (docs[id]) {
+      Object.assign(docs[id], updates, { updated: Date.now() });
+      saveDocs(docs);
+    }
+  }
+
+  function deleteDoc(id) {
+    const docs = loadDocs();
+    delete docs[id];
+    saveDocs(docs);
+  }
+
+  // ─────────────────────────────────────────────────
+  // Editor (textarea fallback — CM6 loaded async)
+  // ─────────────────────────────────────────────────
+  const textarea = $('#editor-fallback');
+
+  function getEditorContent() {
+    if (editorView) {
+      return editorView.state.doc.toString();
+    }
+    return textarea.value;
+  }
+
+  function setEditorContent(content) {
+    if (editorView) {
+      editorView.dispatch({
+        changes: { from: 0, to: editorView.state.doc.length, insert: content }
+      });
+    } else {
+      textarea.value = content;
+    }
+  }
+
+  // Auto-save on changes
+  function onEditorChange() {
+    if (suppressExternalUpdate) return;
+    if (currentDocId && !isConnected) {
+      updateDoc(currentDocId, { content: getEditorContent() });
+    }
+    scheduleCompile();
+    if (isConnected) scheduleServerSave();
+  }
+
+  textarea.addEventListener('input', onEditorChange);
+
+  // Cursor position tracking
+  textarea.addEventListener('keyup', updateCursorStatus);
+  textarea.addEventListener('click', updateCursorStatus);
+
+  function updateCursorStatus() {
+    if (editorView) {
+      const pos = editorView.state.selection.main.head;
+      const line = editorView.state.doc.lineAt(pos);
+      $('#status-cursor').textContent = `Ln ${line.number}, Col ${pos - line.from + 1}`;
+    } else {
+      const val = textarea.value;
+      const pos = textarea.selectionStart;
+      const lines = val.substring(0, pos).split('\n');
+      $('#status-cursor').textContent = `Ln ${lines.length}, Col ${lines[lines.length - 1].length + 1}`;
+    }
+  }
+
+  // Tab key support for textarea
+  textarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      textarea.value = textarea.value.substring(0, start) + '  ' + textarea.value.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + 2;
+      onEditorChange();
+    }
+  });
+
+  // ─────────────────────────────────────────────────
+  // Load CodeMirror 6 asynchronously
+  // ─────────────────────────────────────────────────
+  async function loadCodeMirror() {
+    try {
+      const [
+        { EditorView, keymap, lineNumbers, highlightActiveLine,
+          highlightActiveLineGutter, drawSelection, highlightSpecialChars },
+        { EditorState },
+        { defaultKeymap, history, historyKeymap, indentWithTab },
+        { syntaxHighlighting, bracketMatching, HighlightStyle, StreamLanguage },
+        { closeBrackets, closeBracketsKeymap },
+        { tags }
+      ] = await Promise.all([
+        import('https://esm.sh/@codemirror/view@6.35.3'),
+        import('https://esm.sh/@codemirror/state@6.5.2'),
+        import('https://esm.sh/@codemirror/commands@6.7.2'),
+        import('https://esm.sh/@codemirror/language@6.10.8'),
+        import('https://esm.sh/@codemirror/autocomplete@6.18.6'),
+        import('https://esm.sh/@lezer/highlight@1.2.1'),
+      ]);
+
+      // Custom dark theme matching the design system
+      const writeTheme = EditorView.theme({
+        '&': {
+          backgroundColor: 'var(--surface)',
+          color: 'var(--text-primary)',
+        },
+        '.cm-content': {
+          fontFamily: 'var(--font-mono)',
+          fontSize: '14px',
+          lineHeight: '1.65',
+          padding: '24px 32px',
+          maxWidth: '720px',
+          caretColor: 'var(--amber-500)',
+        },
+        '.cm-cursor': {
+          borderLeftColor: 'var(--amber-500)',
+          borderLeftWidth: '2px',
+        },
+        '.cm-gutters': {
+          backgroundColor: 'var(--surface)',
+          borderRight: '1px solid var(--border-subtle)',
+          color: 'var(--text-muted)',
+          fontSize: '12px',
+          minWidth: '48px',
+        },
+        '.cm-activeLineGutter': {
+          backgroundColor: 'transparent',
+          color: 'var(--text-secondary)',
+        },
+        '.cm-activeLine': {
+          backgroundColor: 'var(--accent-dim)',
+        },
+        '&.cm-focused .cm-selectionBackground, .cm-selectionBackground': {
+          backgroundColor: 'rgba(212, 165, 116, 0.18)',
+        },
+        '.cm-matchingBracket': {
+          backgroundColor: 'rgba(212, 165, 116, 0.25)',
+          color: 'var(--amber-400)',
+        },
+      });
+
+      // Typst StreamLanguage — tokenizer for real syntax highlighting
+      const typstLanguage = StreamLanguage.define({
+        name: 'typst',
+        startState: () => ({ inBlockComment: false, inMath: false }),
+        token(stream, state) {
+          // Block comment continuation
+          if (state.inBlockComment) {
+            if (stream.match('*/')) { state.inBlockComment = false; }
+            else { stream.next(); }
+            return 'comment';
+          }
+
+          // Math mode continuation
+          if (state.inMath) {
+            if (stream.match('$')) { state.inMath = false; return 'string'; }
+            stream.next();
+            return 'string';
+          }
+
+          // Line comment
+          if (stream.match('//')) { stream.skipToEnd(); return 'comment'; }
+
+          // Block comment open
+          if (stream.match('/*')) { state.inBlockComment = true; return 'comment'; }
+
+          // Headings: = / == / === at line start
+          if (stream.sol() && stream.match(/^={1,6}\s/)) { return 'heading'; }
+
+          // #keyword or #function — the defining Typst feature
+          if (stream.peek() === '#') {
+            stream.next();
+            if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_-]*/)) {
+              return 'keyword';
+            }
+            return null;
+          }
+
+          // Math: $...$ inline or $ ... $ block
+          if (stream.match('$')) {
+            state.inMath = true;
+            return 'string';
+          }
+
+          // Strings
+          if (stream.match('"')) {
+            while (!stream.eol()) {
+              if (stream.next() === '"') break;
+            }
+            return 'string';
+          }
+
+          // Labels: <label>
+          if (stream.match(/^<[a-zA-Z0-9_:-]+>/)) { return 'typeName'; }
+
+          // Numbers
+          if (stream.match(/^-?[0-9]+(\.[0-9]+)?(pt|em|cm|mm|in|%|fr)?/)) { return 'number'; }
+
+          // Bold *text* and _italic_
+          if (stream.match('*')) { return 'strong'; }
+          if (stream.match('_')) { return 'emphasis'; }
+
+          stream.next();
+          return null;
+        },
+        languageData: { commentTokens: { line: '//' } },
+      });
+
+      const writeHighlightStyle = HighlightStyle.define([
+        { tag: tags.keyword,    color: '#c792ea' },          // #functions
+        { tag: tags.comment,    color: 'var(--text-muted)', fontStyle: 'italic' },
+        { tag: tags.string,     color: '#c3e88d' },          // strings + math
+        { tag: tags.number,     color: '#f78c6c' },
+        { tag: tags.heading,    color: 'var(--amber-500)', fontWeight: '600' },
+        { tag: tags.emphasis,   fontStyle: 'italic' },
+        { tag: tags.strong,     fontWeight: 'bold' },
+        { tag: tags.typeName,   color: '#ffcb6b' },          // <labels>
+      ]);
+
+      // Build editor
+      const content = textarea.value;
+
+      const updateListener = EditorView.updateListener.of((update) => {
+        if (update.docChanged) {
+          onEditorChange();
+        }
+        if (update.selectionSet || update.docChanged) {
+          const pos = update.state.selection.main.head;
+          const line = update.state.doc.lineAt(pos);
+          $('#status-cursor').textContent = `Ln ${line.number}, Col ${pos - line.from + 1}`;
+        }
+      });
+
+      editorView = new EditorView({
+        parent: $('#editor-container'),
+        state: EditorState.create({
+          doc: content,
+          extensions: [
+            lineNumbers(),
+            highlightActiveLine(),
+            highlightActiveLineGutter(),
+            highlightSpecialChars(),
+            drawSelection(),
+            bracketMatching(),
+            closeBrackets(),
+            history(),
+            keymap.of([
+              ...defaultKeymap,
+              ...historyKeymap,
+              ...closeBracketsKeymap,
+              indentWithTab,
+            ]),
+            typstLanguage,
+            writeTheme,
+            syntaxHighlighting(writeHighlightStyle),
+            updateListener,
+            EditorView.lineWrapping,
+          ],
+        }),
+      });
+
+      // Remove fallback textarea
+      textarea.remove();
+
+      console.log('[write] CodeMirror loaded');
+    } catch (err) {
+      console.warn('[write] CodeMirror failed to load, using textarea fallback:', err);
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Typst compiler
+  // ─────────────────────────────────────────────────
+  async function initTypst() {
+    return new Promise((resolve) => {
+      const loader = document.getElementById('typst-loader');
+
+      function tryInit() {
+        if (typeof $typst !== 'undefined') {
+          $typst.setCompilerInitOptions({
+            getModule: () =>
+              'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-web-compiler/pkg/typst_ts_web_compiler_bg.wasm',
+          });
+          $typst.setRendererInitOptions({
+            getModule: () =>
+              'https://cdn.jsdelivr.net/npm/@myriaddreamin/typst-ts-renderer/pkg/typst_ts_renderer_bg.wasm',
+          });
+          resolve(true);
+        } else {
+          setTimeout(tryInit, 100);
+        }
+      }
+
+      if (loader) {
+        loader.addEventListener('load', tryInit);
+      }
+      // Also try immediately in case script already loaded
+      tryInit();
+    });
+  }
+
+  async function compile() {
+    if (!compilerReady) return;
+
+    const source = getEditorContent();
+    if (!source.trim()) {
+      $('#preview-content').innerHTML = '';
+      return;
+    }
+
+    setStatus('compiling', 'compiling…');
+    const t0 = performance.now();
+
+    try {
+      const svg = await $typst.svg({ mainContent: source });
+      const elapsed = (performance.now() - t0).toFixed(0);
+
+      $('#preview-content').innerHTML = svg;
+      $('#status-compile-time').textContent = `${elapsed}ms`;
+      setStatus('ready', 'ready');
+    } catch (err) {
+      const elapsed = (performance.now() - t0).toFixed(0);
+      setStatus('error', 'error');
+      $('#status-compile-time').textContent = `${elapsed}ms`;
+      console.warn('[write] Compile error:', err);
+    }
+  }
+
+  function scheduleCompile() {
+    clearTimeout(compileTimeout);
+    compileTimeout = setTimeout(compile, 300);
+  }
+
+  function setStatus(state, text) {
+    const dot = $('#status-dot');
+    dot.className = 'status-dot ' + state;
+    $('#status-text').textContent = text;
+  }
+
+  // ─────────────────────────────────────────────────
+  // Divider drag
+  // ─────────────────────────────────────────────────
+  const divider = $('#divider');
+  const editorPane = $('#editor-pane');
+  const previewPane = $('#preview-pane');
+
+  let isDragging = false;
+
+  divider.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    divider.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const container = $('main');
+    const rect = container.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    const clamped = Math.max(0.25, Math.min(0.75, ratio));
+    editorPane.style.flex = `0 0 ${clamped * 100}%`;
+    previewPane.style.flex = `0 0 ${(1 - clamped) * 100}%`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      divider.classList.remove('dragging');
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+  });
+
+  // ─────────────────────────────────────────────────
+  // File I/O (File System Access API)
+  // ─────────────────────────────────────────────────
+  async function saveToFile() {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: $('#doc-title').value || 'document.typ',
+        types: [{
+          description: 'Typst Document',
+          accept: { 'text/plain': ['.typ'] },
+        }],
+      });
+      const writable = await handle.createWritable();
+      await writable.write(getEditorContent());
+      await writable.close();
+      setStatus('ready', 'saved');
+    } catch (err) {
+      if (err.name !== 'AbortError') console.warn('[write] Save error:', err);
+    }
+  }
+
+  async function openFromFile() {
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{
+          description: 'Typst Document',
+          accept: { 'text/plain': ['.typ'] },
+        }],
+        multiple: false,
+      });
+      const file = await handle.getFile();
+      const content = await file.text();
+      const id = createDoc(file.name, content);
+      switchToDoc(id);
+    } catch (err) {
+      if (err.name !== 'AbortError') console.warn('[write] Open error:', err);
+    }
+  }
+
+  async function exportPdf() {
+    if (!compilerReady) return;
+    try {
+      setStatus('compiling', 'exporting pdf…');
+      const pdf = await $typst.pdf({ mainContent: getEditorContent() });
+      const blob = new Blob([pdf], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = ($('#doc-title').value || 'document').replace(/\.typ$/, '') + '.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+      setStatus('ready', 'ready');
+    } catch (err) {
+      setStatus('error', 'pdf export failed');
+      console.warn('[write] PDF export error:', err);
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Document management
+  // ─────────────────────────────────────────────────
+  function switchToDoc(id) {
+    const docs = loadDocs();
+    if (!docs[id]) return;
+    currentDocId = id;
+    saveCurrentId(id);
+    setEditorContent(docs[id].content);
+    $('#doc-title').value = docs[id].title;
+    scheduleCompile();
+    closeDocList();
+  }
+
+  function showDocList() {
+    const docs = loadDocs();
+    const items = Object.entries(docs)
+      .sort(([,a], [,b]) => b.updated - a.updated);
+
+    const container = $('#doc-list-items');
+    if (items.length === 0) {
+      container.innerHTML = '<div class="doc-empty">No documents yet</div>';
+    } else {
+      container.innerHTML = items.map(([id, doc]) => `
+        <div class="doc-item" data-id="${id}">
+          <div>
+            <div class="doc-item-name">${doc.title}</div>
+            <div class="doc-item-date">${new Date(doc.updated).toLocaleDateString()}</div>
+          </div>
+          <button class="doc-item-delete" data-delete="${id}" title="Delete">✕</button>
+        </div>
+      `).join('');
+    }
+
+    $('#doc-list-overlay').classList.add('visible');
+
+    // Event delegation
+    container.onclick = (e) => {
+      const del = e.target.closest('[data-delete]');
+      if (del) {
+        e.stopPropagation();
+        const id = del.dataset.delete;
+        if (confirm('Delete this document?')) {
+          deleteDoc(id);
+          if (id === currentDocId) {
+            newDoc();
+          }
+          showDocList(); // refresh
+        }
+        return;
+      }
+      const item = e.target.closest('.doc-item');
+      if (item) switchToDoc(item.dataset.id);
+    };
+  }
+
+  function closeDocList() {
+    $('#doc-list-overlay').classList.remove('visible');
+  }
+
+  function newDoc() {
+    const id = createDoc('untitled.typ', '');
+    switchToDoc(id);
+  }
+
+  // Title changes
+  $('#doc-title').addEventListener('input', () => {
+    if (currentDocId) {
+      updateDoc(currentDocId, { title: $('#doc-title').value });
+    }
+  });
+
+  // ─────────────────────────────────────────────────
+  // Button bindings
+  // ─────────────────────────────────────────────────
+  $('#btn-docs').addEventListener('click', showDocList);
+  $('#btn-new').addEventListener('click', newDoc);
+  $('#btn-save-file').addEventListener('click', saveToFile);
+  $('#btn-open-file').addEventListener('click', openFromFile);
+  $('#btn-export').addEventListener('click', exportPdf);
+  $('#btn-close-docs').addEventListener('click', closeDocList);
+
+  $('#doc-list-overlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeDocList();
+  });
+
+  // Welcome overlay
+  function dismissWelcome() {
+    const overlay = $('#welcome-overlay');
+    if (!overlay) return;
+    overlay.classList.add('dismissing');
+    localStorage.setItem('write-welcomed', '1');
+    setTimeout(() => overlay.remove(), 500);
+    // Focus editor after welcome
+    setTimeout(() => {
+      if (editorView) editorView.focus();
+      else textarea.focus();
+    }, 100);
+  }
+
+  const welcomeBtn = $('#btn-welcome-start');
+  if (welcomeBtn) welcomeBtn.addEventListener('click', dismissWelcome);
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (mod && e.key === 'o') {
+      e.preventDefault();
+      showDocList();
+    }
+    if (mod && e.shiftKey && e.key === 'S') {
+      e.preventDefault();
+      saveToFile();
+    }
+    if (mod && e.shiftKey && e.key.toLowerCase() === 'l') {
+      e.preventDefault();
+      if (assistState.active) {
+        closeAssist();
+      } else {
+        openAssist();
+      }
+    }
+    if (e.key === 'Escape') {
+      if (assistState.active) {
+        closeAssist();
+      } else {
+        closeDocList();
+      }
+    }
+  });
+
+  // ─────────────────────────────────────────────────
+  // Connected mode — server API
+  // ─────────────────────────────────────────────────
+  function getAuthToken() {
+    return localStorage.getItem(AUTH_TOKEN_KEY);
+  }
+
+  function authHeaders() {
+    return {
+      'Authorization': `Bearer ${getAuthToken()}`,
+      'Content-Type': 'application/json',
+    };
+  }
+
+  async function checkAuth() {
+    const token = getAuthToken();
+    if (!token) return false;
+    try {
+      const res = await fetch(`${API_BASE}/verify`, { headers: authHeaders() });
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
+
+  function activateConnectedMode() {
+    isConnected = true;
+    const indicator = $('#auth-indicator');
+    indicator.classList.add('connected');
+    indicator.removeAttribute('href');
+    indicator.innerHTML = `
+      <span class="auth-dot"></span>
+      <span>connected</span>
+    `;
+    // Add sign-out button after indicator
+    const signout = document.createElement('button');
+    signout.className = 'btn-signout';
+    signout.textContent = '✕';
+    signout.title = 'Sign out';
+    signout.onclick = () => {
+      disconnectWebSocket();
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+      window.location.reload();
+    };
+    indicator.parentNode.appendChild(signout);
+
+    $('#status-mode').textContent = 'connected';
+    $('#status-mode').classList.add('connected');
+    console.log('[write] Connected mode active');
+  }
+
+  // ── Server document operations ──
+
+  async function serverListDocs() {
+    const res = await fetch(`${API_BASE}/documents`, { headers: authHeaders() });
+    if (!res.ok) throw new Error('Failed to list documents');
+    const data = await res.json();
+    return data.documents;
+  }
+
+  async function serverLoadDoc(docId) {
+    const res = await fetch(`${API_BASE}/documents/${docId}`, { headers: authHeaders() });
+    if (!res.ok) throw new Error('Failed to load document');
+    return await res.json();
+  }
+
+  async function serverCreateDoc(title, content) {
+    const res = await fetch(`${API_BASE}/documents`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ title, content }),
+    });
+    if (!res.ok) throw new Error('Failed to create document');
+    return await res.json();
+  }
+
+  async function serverSaveDoc(docId, content, title) {
+    const body = {};
+    if (content !== undefined) body.content = content;
+    if (title !== undefined) body.title = title;
+    const res = await fetch(`${API_BASE}/documents/${docId}`, {
+      method: 'PUT',
+      headers: authHeaders(),
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error('Failed to save document');
+  }
+
+  async function serverDeleteDoc(docId) {
+    const res = await fetch(`${API_BASE}/documents/${docId}`, {
+      method: 'DELETE',
+      headers: authHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to delete document');
+  }
+
+  // Debounced server save on edit (connected mode)
+  let wsSaveTimeout = null;
+  let lastSentHash = '';
+  let suppressExternalUpdate = false;
+
+  function scheduleServerSave() {
+    if (!isConnected || !currentDocId) return;
+    clearTimeout(wsSaveTimeout);
+    wsSaveTimeout = setTimeout(() => {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        const content = getEditorContent();
+        ws.send(JSON.stringify({
+          type: 'update',
+          content,
+          title: $('#doc-title').value,
+        }));
+      }
+    }, 400);
+  }
+
+  // ── WebSocket connection manager ──
+
+  let wsReconnectTimer = null;
+  let wsPingInterval = null;
+
+  function connectWebSocket(docId) {
+    // Close existing connection
+    disconnectWebSocket();
+
+    const token = getAuthToken();
+    const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${location.host}/write/api/ws/${docId}?token=${token}`;
+
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      console.log('[write] WebSocket connected for:', docId);
+      // Keepalive ping every 30s
+      wsPingInterval = setInterval(() => {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ type: 'ping' }));
+        }
+      }, 30000);
+    };
+
+    ws.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+
+        if (msg.type === 'init') {
+          // Server sent initial document — only apply if we don't
+          // already have content loaded (e.g. from REST during boot)
+          lastSentHash = msg.hash || '';
+          console.log('[write] WebSocket init, hash:', lastSentHash);
+        }
+
+        else if (msg.type === 'saved') {
+          lastSentHash = msg.hash || '';
+          setStatus('ready', 'saved');
+        }
+
+        else if (msg.type === 'external_update') {
+          // File was changed externally (Claude Code, SSH, etc.)
+          // Apply the new content to the editor
+          console.log('[write] External update received');
+          lastSentHash = msg.hash || '';
+
+          // Prevent our own edit handler from sending this back
+          suppressExternalUpdate = true;
+          const currentPos = editorView
+            ? editorView.state.selection.main.head
+            : 0;
+
+          setEditorContent(msg.content);
+
+          // Restore cursor position as best we can
+          if (editorView) {
+            const maxPos = editorView.state.doc.length;
+            const safePos = Math.min(currentPos, maxPos);
+            editorView.dispatch({
+              selection: { anchor: safePos },
+            });
+          }
+
+          suppressExternalUpdate = false;
+          scheduleCompile();
+          setStatus('ready', 'updated externally');
+        }
+
+        else if (msg.type === 'pong') {
+          // Keepalive acknowledged
+        }
+
+        // Phase 3: AI assist messages
+        else if (msg.type === 'assist_start') {
+          // Streaming started — UI already set up by submitAssist()
+        }
+
+        else if (msg.type === 'assist_chunk') {
+          handleAssistChunk(msg.text || '');
+        }
+
+        else if (msg.type === 'assist_done') {
+          handleAssistDone();
+        }
+
+        else if (msg.type === 'assist_error') {
+          handleAssistError(msg.error || 'Unknown error');
+        }
+      } catch (err) {
+        console.warn('[write] WebSocket message parse error:', err);
+      }
+    };
+
+    ws.onclose = (event) => {
+      console.log('[write] WebSocket closed:', event.code, event.reason);
+      clearInterval(wsPingInterval);
+      ws = null;
+
+      // Reconnect after 3s if still connected mode
+      if (isConnected && currentDocId === docId) {
+        setStatus('compiling', 'reconnecting…');
+        wsReconnectTimer = setTimeout(() => {
+          console.log('[write] Reconnecting WebSocket…');
+          connectWebSocket(docId);
+        }, 3000);
+      }
+    };
+
+    ws.onerror = (err) => {
+      console.warn('[write] WebSocket error:', err);
+    };
+  }
+
+  function disconnectWebSocket() {
+    clearTimeout(wsReconnectTimer);
+    clearInterval(wsPingInterval);
+    if (ws) {
+      ws.onclose = null; // Prevent reconnect on intentional close
+      ws.close();
+      ws = null;
+    }
+  }
+
+  // ── Override doc management for connected mode ──
+
+  // ── Override showDocList for connected mode ──
+
+  async function showDocListConnected() {
+    const container = $('#doc-list-items');
+    container.innerHTML = '<div class="doc-empty">Loading…</div>';
+    $('#doc-list-overlay').classList.add('visible');
+
+    try {
+      const docs = await serverListDocs();
+      if (docs.length === 0) {
+        container.innerHTML = '<div class="doc-empty">No documents yet</div>';
+      } else {
+        container.innerHTML = docs.map((doc) => `
+          <div class="doc-item" data-id="${doc.id}">
+            <div>
+              <div class="doc-item-name">${doc.title}</div>
+              <div class="doc-item-date">${new Date(doc.updated * 1000).toLocaleDateString()}</div>
+            </div>
+            <button class="doc-item-delete" data-delete="${doc.id}" title="Delete">✕</button>
+          </div>
+        `).join('');
+      }
+    } catch (err) {
+      container.innerHTML = '<div class="doc-empty">Failed to load documents</div>';
+      console.warn('[write] List docs error:', err);
+    }
+
+    container.onclick = async (e) => {
+      const del = e.target.closest('[data-delete]');
+      if (del) {
+        e.stopPropagation();
+        if (confirm('Delete this document?')) {
+          try {
+            await serverDeleteDoc(del.dataset.delete);
+            if (del.dataset.delete === currentDocId) {
+              setEditorContent('');
+              currentDocId = null;
+            }
+            showDocListConnected();
+          } catch (err) {
+            console.warn('[write] Delete failed:', err);
+          }
+        }
+        return;
+      }
+      const item = e.target.closest('.doc-item');
+      if (item) {
+        try {
+          const doc = await serverLoadDoc(item.dataset.id);
+          currentDocId = doc.id;
+          setEditorContent(doc.content);
+          $('#doc-title').value = doc.title;
+          connectWebSocket(doc.id);
+          scheduleCompile();
+          closeDocList();
+        } catch (err) {
+          console.warn('[write] Load doc failed:', err);
+        }
+      }
+    };
+  }
+
+  async function newDocConnected() {
+    try {
+      const doc = await serverCreateDoc('untitled.typ', '');
+      currentDocId = doc.id;
+      setEditorContent('');
+      $('#doc-title').value = doc.title;
+      connectWebSocket(doc.id);
+      closeDocList();
+    } catch (err) {
+      console.warn('[write] Create doc failed:', err);
+    }
+  }
+
+  // ─────────────────────────────────────────────────
+  // Cmd/Ctrl+Shift+L — AI assist interface (connected mode only)
+  // ─────────────────────────────────────────────────
+
+  let assistState = {
+    active: false,
+    streaming: false,
+    selection: '',
+    selectionFrom: 0,
+    selectionTo: 0,
+    responseText: '',
+  };
+
+  const assistPanel = $('#assist-panel');
+  const assistInput = $('#assist-input');
+  const assistResponseText = $('#assist-response-text');
+  const assistActions = $('#assist-actions');
+  const assistSelectionPreview = $('#assist-selection-preview');
+
+  function openAssist() {
+    if (!isConnected || !ws || ws.readyState !== WebSocket.OPEN) return;
+
+    // Capture current selection
+    let selection = '';
+    let from = 0;
+    let to = 0;
+
+    if (editorView) {
+      const sel = editorView.state.selection.main;
+      from = sel.from;
+      to = sel.to;
+      selection = editorView.state.sliceDoc(from, to);
+    }
+
+    assistState.selection = selection;
+    assistState.selectionFrom = from;
+    assistState.selectionTo = to;
+    assistState.responseText = '';
+    assistState.active = true;
+    assistState.streaming = false;
+
+    // Show selection preview
+    if (selection) {
+      const preview = selection.length > 80
+        ? selection.substring(0, 80) + '…'
+        : selection;
+      assistSelectionPreview.textContent = `"${preview}"`;
+    } else {
+      assistSelectionPreview.textContent = 'no selection — whole document as context';
+    }
+
+    // Reset UI
+    assistResponseText.textContent = '';
+    assistActions.classList.remove('visible');
+    assistPanel.classList.remove('assist-streaming');
+    assistPanel.classList.add('active');
+    assistInput.value = '';
+    assistInput.focus();
+  }
+
+  function closeAssist() {
+    assistState.active = false;
+    assistState.streaming = false;
+    assistPanel.classList.remove('active', 'assist-streaming');
+    assistResponseText.textContent = '';
+    assistActions.classList.remove('visible');
+
+    // Return focus to editor
+    if (editorView) editorView.focus();
+  }
+
+  function submitAssist() {
+    const instruction = assistInput.value.trim();
+    if (!instruction || assistState.streaming) return;
+    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+    assistState.streaming = true;
+    assistState.responseText = '';
+    assistResponseText.textContent = '';
+    assistPanel.classList.add('assist-streaming');
+    assistActions.classList.remove('visible');
+    $('#assist-submit').disabled = true;
+
+    // Get surrounding context for better responses
+    let contextBefore = '';
+    let contextAfter = '';
+    if (editorView) {
+      const doc = editorView.state.doc.toString();
+      contextBefore = doc.substring(
+        Math.max(0, assistState.selectionFrom - 500),
+        assistState.selectionFrom
+      );
+      contextAfter = doc.substring(
+        assistState.selectionTo,
+        Math.min(doc.length, assistState.selectionTo + 500)
+      );
+    }
+
+    ws.send(JSON.stringify({
+      type: 'assist',
+      instruction,
+      selection: assistState.selection,
+      context_before: contextBefore,
+      context_after: contextAfter,
+    }));
+  }
+
+  function handleAssistChunk(text) {
+    assistState.responseText += text;
+    assistResponseText.textContent = assistState.responseText;
+    // Auto-scroll response area
+    const responseContainer = assistResponseText.parentElement;
+    responseContainer.scrollTop = responseContainer.scrollHeight;
+  }
+
+  function handleAssistDone() {
+    assistState.streaming = false;
+    assistPanel.classList.remove('assist-streaming');
+    assistActions.classList.add('visible');
+    $('#assist-submit').disabled = false;
+  }
+
+  function handleAssistError(error) {
+    assistState.streaming = false;
+    assistPanel.classList.remove('assist-streaming');
+    assistResponseText.textContent = `// error: ${error}`;
+    $('#assist-submit').disabled = false;
+  }
+
+  function acceptAssist() {
+    if (!assistState.responseText || !editorView) {
+      closeAssist();
+      return;
+    }
+
+    const response = assistState.responseText;
+
+    if (assistState.selection) {
+      // Replace selection with response
+      editorView.dispatch({
+        changes: {
+          from: assistState.selectionFrom,
+          to: assistState.selectionTo,
+          insert: response,
+        },
+      });
+    } else {
+      // No selection — insert at cursor
+      const pos = editorView.state.selection.main.head;
+      editorView.dispatch({
+        changes: { from: pos, insert: response },
+      });
+    }
+
+    closeAssist();
+  }
+
+  function copyAssist() {
+    if (assistState.responseText) {
+      navigator.clipboard.writeText(assistState.responseText);
+      $('#assist-copy').textContent = 'copied';
+      setTimeout(() => { $('#assist-copy').textContent = 'copy'; }, 1500);
+    }
+  }
+
+  // Wire up assist panel events
+  $('#assist-close').addEventListener('click', closeAssist);
+  $('#assist-submit').addEventListener('click', submitAssist);
+  $('#assist-accept').addEventListener('click', acceptAssist);
+  $('#assist-reject').addEventListener('click', closeAssist);
+  $('#assist-copy').addEventListener('click', copyAssist);
+
+  assistInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submitAssist();
+    }
+    if (e.key === 'Escape') {
+      closeAssist();
+    }
+  });
+
+  // Hook assist messages into WebSocket handler
+  const _originalWsOnMessage = null; // Will be patched in connectWebSocket
+
+  // ─────────────────────────────────────────────────
+  // Boot
+  // ─────────────────────────────────────────────────
+  async function boot() {
+    // 0. Skip welcome for returning visitors
+    if (localStorage.getItem('write-welcomed')) {
+      const overlay = $('#welcome-overlay');
+      if (overlay) overlay.remove();
+    }
+
+    // 1. Check authentication
+    const authenticated = await checkAuth();
+
+    if (authenticated) {
+      activateConnectedMode();
+
+      // Rebind buttons for connected mode
+      $('#btn-docs').onclick = showDocListConnected;
+      $('#btn-new').onclick = newDocConnected;
+      $('#doc-title').oninput = () => {
+        if (currentDocId) scheduleServerSave();
+      };
+
+      // Load most recent server document
+      try {
+        const docs = await serverListDocs();
+        if (docs.length > 0) {
+          const doc = await serverLoadDoc(docs[0].id);
+          currentDocId = doc.id;
+          setEditorContent(doc.content);
+          $('#doc-title').value = doc.title;
+          connectWebSocket(doc.id);
+        } else {
+          // No server docs yet — create one with sample content
+          const doc = await serverCreateDoc('draft.typ', SAMPLE_DOC);
+          currentDocId = doc.id;
+          await serverSaveDoc(doc.id, SAMPLE_DOC);
+          setEditorContent(SAMPLE_DOC);
+          $('#doc-title').value = 'draft.typ';
+          connectWebSocket(doc.id);
+        }
+      } catch (err) {
+        console.warn('[write] Failed to load server docs, falling back to local:', err);
+        isConnected = false;
+      }
+    }
+
+    // 2. Fall back to local mode if not connected
+    if (!isConnected) {
+      const savedId = loadCurrentId();
+      const docs = loadDocs();
+
+      if (savedId && docs[savedId]) {
+        currentDocId = savedId;
+        setEditorContent(docs[savedId].content);
+        $('#doc-title').value = docs[savedId].title;
+      } else if (Object.keys(docs).length > 0) {
+        const latest = Object.entries(docs).sort(([,a],[,b]) => b.updated - a.updated)[0];
+        currentDocId = latest[0];
+        saveCurrentId(currentDocId);
+        setEditorContent(latest[1].content);
+        $('#doc-title').value = latest[1].title;
+      } else {
+        currentDocId = createDoc('draft.typ', SAMPLE_DOC);
+        saveCurrentId(currentDocId);
+        setEditorContent(SAMPLE_DOC);
+        $('#doc-title').value = 'draft.typ';
+      }
+    }
+
+    // 3. Load CodeMirror (non-blocking)
+    loadCodeMirror();
+
+    // 4. Initialize Typst compiler
+    setStatus('compiling', 'loading compiler…');
+    try {
+      await initTypst();
+      compilerReady = true;
+      setStatus('ready', 'ready');
+      $('#preview-placeholder').remove();
+      compile();
+    } catch (err) {
+      setStatus('error', 'compiler failed');
+      console.error('[write] Typst init error:', err);
+      $('#preview-placeholder').innerHTML =
+        '<span>Failed to load Typst compiler.<br>Check console for details.</span>';
+    }
+  }
+
+  boot();
+</script>
+</body>
+</html>
