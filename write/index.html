@@ -1557,6 +1557,8 @@ watch the render catch up immediately.
       const elapsed = (performance.now() - t0).toFixed(0);
       setStatus('error', 'error');
       $('#status-compile-time').textContent = `${elapsed}ms`;
+      console.log('[typst-diag] raw error:', JSON.stringify(err, null, 2));
+      console.log('[typst-diag] err.diagnostics:', err?.diagnostics);
       const diagnostics = normalizeTypstDiagnostics(err);
       if (lastGoodPreviewSvg) {
         $('#preview-content').innerHTML = lastGoodPreviewSvg;
