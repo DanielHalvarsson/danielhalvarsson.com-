@@ -1039,7 +1039,6 @@
           <div class="preview-diagnostics-note" id="preview-diagnostics-note">Preview unavailable</div>
         </div>
         <div class="preview-diagnostics-summary" id="preview-diagnostics-summary"></div>
-        <ul class="preview-diagnostics-list" id="preview-diagnostics-list"></ul>
         <details class="preview-diagnostics-raw" id="preview-diagnostics-raw-wrap">
           <summary>Technical details</summary>
           <pre id="preview-diagnostics-raw"></pre>
@@ -1557,8 +1556,6 @@ watch the render catch up immediately.
       const elapsed = (performance.now() - t0).toFixed(0);
       setStatus('error', 'error');
       $('#status-compile-time').textContent = `${elapsed}ms`;
-      console.log('[typst-diag] raw error:', JSON.stringify(err, null, 2));
-      console.log('[typst-diag] err.diagnostics:', err?.diagnostics);
       const diagnostics = normalizeTypstDiagnostics(err);
       if (lastGoodPreviewSvg) {
         $('#preview-content').innerHTML = lastGoodPreviewSvg;
@@ -1591,7 +1588,6 @@ watch the render catch up immediately.
   function clearPreviewDiagnostics() {
     $('#preview-diagnostics').hidden = true;
     $('#preview-diagnostics-summary').textContent = '';
-    $('#preview-diagnostics-list').innerHTML = '';
     $('#preview-diagnostics-raw').textContent = '';
     $('#preview-diagnostics-raw-wrap').hidden = true;
   }
@@ -1602,14 +1598,6 @@ watch the render catch up immediately.
       ? 'Showing last successful render'
       : 'Preview unavailable';
     $('#preview-diagnostics-summary').textContent = diagnostics.summary;
-
-    const list = $('#preview-diagnostics-list');
-    list.innerHTML = diagnostics.entries.map((entry) => `
-      <li class="preview-diagnostic-item">
-        <div class="preview-diagnostic-severity">${escapeHtml(entry.severity)}</div>
-        <div class="preview-diagnostic-message">${escapeHtml(entry.message)}</div>
-      </li>
-    `).join('');
 
     const rawWrap = $('#preview-diagnostics-raw-wrap');
     if (diagnostics.raw) {
