@@ -188,6 +188,25 @@
       flex: 1;
       overflow: auto;
       padding: 0;
+      position: relative;
+    }
+
+    #editor-container[data-editor-mode="fallback"]::before {
+      content: attr(data-editor-error);
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      z-index: 5;
+      max-width: 360px;
+      padding: 8px 10px;
+      border: 1px solid rgba(229, 115, 115, 0.35);
+      background: rgba(229, 115, 115, 0.12);
+      color: var(--slate-100);
+      font-family: var(--font-body);
+      font-size: 12px;
+      line-height: 1.4;
+      border-radius: var(--radius);
+      pointer-events: none;
     }
 
     /* CodeMirror theme overrides */
@@ -301,6 +320,21 @@
       width: 100%;
     }
 
+    #preview-content.preview-stale::after {
+      content: "preview is showing last successful render";
+      display: inline-flex;
+      margin-top: 12px;
+      padding: 6px 9px;
+      border: 1px solid rgba(229, 115, 115, 0.35);
+      background: rgba(229, 115, 115, 0.1);
+      color: var(--red-400);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
     #preview-content svg {
       width: 100%;
       height: auto;
@@ -335,6 +369,143 @@
     }
 
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    .preview-error {
+      width: 100%;
+      padding: 18px 20px;
+      border: 1px solid rgba(229, 115, 115, 0.35);
+      background: rgba(229, 115, 115, 0.1);
+      color: var(--slate-100);
+      border-radius: 4px;
+      box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .preview-error-title {
+      margin-bottom: 10px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--red-400);
+    }
+
+    .preview-error-message {
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.5;
+      color: var(--slate-100);
+    }
+
+    .preview-diagnostics {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 14px 18px 18px;
+      border-top: 1px solid var(--border-subtle);
+      background: linear-gradient(180deg, rgba(26, 30, 39, 0.94), rgba(18, 21, 27, 0.98));
+    }
+
+    .preview-diagnostics[hidden] {
+      display: none;
+    }
+
+    .preview-diagnostics-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .preview-diagnostics-title {
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--red-400);
+    }
+
+    .preview-diagnostics-note {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .preview-diagnostics-summary {
+      font-family: var(--font-body);
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--slate-100);
+    }
+
+    .preview-diagnostics-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .preview-diagnostic-item {
+      padding: 10px 12px;
+      border: 1px solid rgba(74, 83, 104, 0.5);
+      border-radius: 4px;
+      background: rgba(11, 13, 17, 0.45);
+    }
+
+    .preview-diagnostic-severity {
+      display: inline-block;
+      margin-bottom: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--amber-400);
+    }
+
+    .preview-diagnostic-message {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      line-height: 1.45;
+      color: var(--slate-100);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .preview-diagnostics-raw {
+      border-top: 1px solid rgba(74, 83, 104, 0.4);
+      padding-top: 10px;
+    }
+
+    .preview-diagnostics-raw summary {
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      list-style: none;
+    }
+
+    .preview-diagnostics-raw summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .preview-diagnostics-raw pre {
+      margin-top: 10px;
+      padding: 12px;
+      overflow: auto;
+      border-radius: 4px;
+      background: rgba(11, 13, 17, 0.65);
+      color: var(--slate-200);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
 
     /* ───── Status bar ───── */
     footer {
@@ -862,6 +1033,18 @@
           </div>
         </div>
       </div>
+      <div class="preview-diagnostics" id="preview-diagnostics" hidden>
+        <div class="preview-diagnostics-head">
+          <div class="preview-diagnostics-title" id="preview-diagnostics-title">Typst compile error</div>
+          <div class="preview-diagnostics-note" id="preview-diagnostics-note">Preview unavailable</div>
+        </div>
+        <div class="preview-diagnostics-summary" id="preview-diagnostics-summary"></div>
+        <ul class="preview-diagnostics-list" id="preview-diagnostics-list"></ul>
+        <details class="preview-diagnostics-raw" id="preview-diagnostics-raw-wrap">
+          <summary>Technical details</summary>
+          <pre id="preview-diagnostics-raw"></pre>
+        </details>
+      </div>
     </div>
   </main>
 
@@ -926,6 +1109,7 @@
   let editorView = null; // Will hold CodeMirror instance
   let isConnected = false; // Authenticated + server-connected mode
   let ws = null; // WebSocket connection
+  let lastGoodPreviewSvg = '';
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
@@ -933,102 +1117,70 @@
   // ─────────────────────────────────────────────────
   // Sample document
   // ─────────────────────────────────────────────────
-  const SAMPLE_DOC = `// Write — a local-first Typst editor
-// danielhalvarsson.com/write
+  const SAMPLE_DOC = `// Edit anything — the render updates instantly.
 
-#set document(title: "Working Paper Draft", author: "Daniel Halvarsson")
+#set document(title: "Write", author: "")
 #set page(margin: (x: 2.5cm, y: 3cm), numbering: "1")
 #set text(font: "New Computer Modern", size: 11pt)
 #set par(justify: true, leading: 0.65em)
 #set heading(numbering: "1.")
 
 #align(center)[
-  #text(size: 18pt, weight: "bold")[
-    Firm Dynamics and Structural Transformation
-  ]
-
-  #v(8pt)
-
-  #text(size: 12pt, fill: gray.darken(20%))[
-    Daniel Halvarsson
-  ]
-
-  #v(4pt)
-
-  #text(size: 10pt, fill: gray)[
-    The Ratio Institute, Stockholm \\\\
-    Draft — April 2026
+  #text(size: 22pt, weight: "bold")[Write]
+  #v(6pt)
+  #text(size: 11pt, fill: gray.darken(20%))[
+    A live Typst editor. Change anything on the left — the render follows.
   ]
 ]
 
-#v(16pt)
+#v(14pt)
 
-= Introduction
+= Prose
 
-The relationship between firm-level productivity dynamics
-and aggregate structural change remains a central question
-in empirical economics. While the decomposition of labor
-productivity growth into within-firm, between-firm, and
-entry/exit components is well established, the mechanisms
-driving reallocation across sectors are less understood.
+Text justifies automatically. Wrap words in *asterisks* for bold and
+_underscores_ for italic. Headings use = signs — one for a section,
+two for a subsection, three for a sub-subsection.
 
-This paper contributes to the literature by leveraging
-novel administrative microdata from Swedish annual reports
-to trace firm-level transitions across sectors at high
-frequency.
+== Subsections
 
-= Theoretical Framework
+Like this one. Rename it, add another, or delete it — section
+numbering updates automatically throughout.
 
-Consider a firm $i$ in sector $s$ at time $t$, with
-productivity $omega_(i,t)$ drawn from a sector-specific
-distribution $F_s$. The firm's output is given by:
+= Mathematics
 
-$ Y_(i,t) = A_(s,t) dot K_(i,t)^alpha dot L_(i,t)^beta dot e^(omega_(i,t)) $
+Inline equations sit naturally inside prose without breaking the line.
+Euler's identity $e^(i pi) + 1 = 0$ is a classic example. So is the
+quadratic formula: $x = (-b plus.minus sqrt(b^2 - 4 a c)) / (2 a)$.
 
-where $A_(s,t)$ is sector-level TFP, $K$ and $L$ are
-capital and labor inputs, and $alpha + beta < 1$ under
-decreasing returns to scale.
+Display math centres automatically and scales with the expression:
 
-The key insight is that reallocation occurs when the
-shadow value of resources differs across firms:
+$ sum_(k=1)^n k = (n(n+1)) / 2 $
 
-$ Delta W = sum_i (omega_(i,t+1) - overline(omega)_t) dot Delta s_(i,t) $
+$ integral_(-oo)^(+oo) e^(-x^2) d x = sqrt(pi) $
 
-== Data and Measurement
+Edit an exponent, change the summation bounds, or swap a symbol and
+watch the render catch up immediately.
 
-The empirical strategy relies on three data sources:
+= Tables
 
 #table(
   columns: (auto, 1fr, auto),
-  inset: 8pt,
-  align: (left, left, center),
-  stroke: 0.5pt + gray.lighten(60%),
-  [*Source*], [*Coverage*], [*Period*],
-  [XBRL annual reports], [SME universe, ~400K firms], [2020–2025],
-  [SCB/LISA], [Population-wide register data], [2001–2023],
-  [Platsbanken], [All public job advertisements], [2006–2025],
+  stroke: 0.4pt + gray.lighten(50%),
+  inset: 7pt,
+  align: (left, left, left),
+  [*Syntax*], [*Renders as*], [*Try*],
+  [\`= Heading\`], [Numbered section], [Change = to ==],
+  [\`$e^(i pi)$\`], [Inline math], [Edit the exponent],
+  [\`*bold*\` / \`_italic_\`], [Inline emphasis], [Wrap a word],
+  [\`#table(...)\`], [This table], [Add a row below],
 )
 
-#v(8pt)
+= Next
 
-The XBRL corpus provides granular financial data at the
-firm level, including revenue by segment, employment,
-and balance sheet items — enabling direct measurement of
-reallocation that aggregate data cannot capture.
-
-= Preliminary Results
-
-Figure 1 will present the decomposition of productivity
-growth across two-digit SNI sectors, highlighting the
-role of between-sector reallocation in driving aggregate
-productivity dynamics.
-
-// TODO: Add figure from Python pipeline
-// #image("figures/decomposition.svg")
-
-= References
-
-// #bibliography("refs.bib", style: "apa")
+- *new* — open a blank document
+- *pdf* — export the current render
+- Select any passage and press *Ctrl+Shift+L* to open the AI revision panel
+- Delete everything here and start from scratch
 `;
 
   // ─────────────────────────────────────────────────
@@ -1151,21 +1303,26 @@ productivity dynamics.
   // ─────────────────────────────────────────────────
   async function loadCodeMirror() {
     try {
-      const [
-        { EditorView, keymap, lineNumbers, highlightActiveLine,
-          highlightActiveLineGutter, drawSelection, highlightSpecialChars,
-          ViewPlugin, Decoration },
-        { EditorState, RangeSetBuilder },
-        { defaultKeymap, history, historyKeymap, indentWithTab },
-        { bracketMatching },
-        { closeBrackets, closeBracketsKeymap },
-      ] = await Promise.all([
-        import('https://esm.sh/@codemirror/view@6.35.3'),
-        import('https://esm.sh/@codemirror/state@6.5.2'),
-        import('https://esm.sh/@codemirror/commands@6.7.2'),
-        import('https://esm.sh/@codemirror/language@6.10.8'),
-        import('https://esm.sh/@codemirror/autocomplete@6.18.6'),
-      ]);
+      const {
+        EditorView,
+        keymap,
+        lineNumbers,
+        highlightActiveLine,
+        highlightActiveLineGutter,
+        drawSelection,
+        highlightSpecialChars,
+        ViewPlugin,
+        Decoration,
+        EditorState,
+        RangeSetBuilder,
+        defaultKeymap,
+        history,
+        historyKeymap,
+        indentWithTab,
+        bracketMatching,
+        closeBrackets,
+        closeBracketsKeymap,
+      } = await import('./codemirror-loader.bundle.js');
 
       // Custom dark theme matching the design system
       const writeTheme = EditorView.theme({
@@ -1325,11 +1482,18 @@ productivity dynamics.
       });
 
       // Remove fallback textarea
+      $('#editor-container').dataset.editorMode = 'codemirror';
+      $('#editor-container').dataset.editorError = '';
       textarea.remove();
 
       console.log('[write] CodeMirror loaded');
     } catch (err) {
       console.warn('[write] CodeMirror failed to load, using textarea fallback:', err);
+      setStatus('error', 'editor fallback');
+      $('#editor-container').dataset.editorMode = 'fallback';
+      $('#editor-container').dataset.editorError =
+        `Editor fallback active: ${err?.message || err}`;
+      textarea.title = `CodeMirror failed to load: ${err?.message || err}`;
     }
   }
 
@@ -1370,6 +1534,9 @@ productivity dynamics.
     const source = getEditorContent();
     if (!source.trim()) {
       $('#preview-content').innerHTML = '';
+      $('#preview-content').classList.remove('preview-stale');
+      clearPreviewDiagnostics();
+      lastGoodPreviewSvg = '';
       return;
     }
 
@@ -1381,12 +1548,29 @@ productivity dynamics.
       const elapsed = (performance.now() - t0).toFixed(0);
 
       $('#preview-content').innerHTML = svg;
+      $('#preview-content').classList.remove('preview-stale');
+      lastGoodPreviewSvg = svg;
+      clearPreviewDiagnostics();
       $('#status-compile-time').textContent = `${elapsed}ms`;
       setStatus('ready', 'ready');
     } catch (err) {
       const elapsed = (performance.now() - t0).toFixed(0);
       setStatus('error', 'error');
       $('#status-compile-time').textContent = `${elapsed}ms`;
+      const diagnostics = normalizeTypstDiagnostics(err);
+      if (lastGoodPreviewSvg) {
+        $('#preview-content').innerHTML = lastGoodPreviewSvg;
+        $('#preview-content').classList.add('preview-stale');
+      } else {
+        $('#preview-content').classList.remove('preview-stale');
+        $('#preview-content').innerHTML = `
+          <div class="preview-error">
+            <div class="preview-error-title">Typst compile error</div>
+            <div class="preview-error-message">${escapeHtml(diagnostics.summary)}</div>
+          </div>
+        `;
+      }
+      renderPreviewDiagnostics(diagnostics, Boolean(lastGoodPreviewSvg));
       console.warn('[write] Compile error:', err);
     }
   }
@@ -1400,6 +1584,124 @@ productivity dynamics.
     const dot = $('#status-dot');
     dot.className = 'status-dot ' + state;
     $('#status-text').textContent = text;
+  }
+
+  function clearPreviewDiagnostics() {
+    $('#preview-diagnostics').hidden = true;
+    $('#preview-diagnostics-summary').textContent = '';
+    $('#preview-diagnostics-list').innerHTML = '';
+    $('#preview-diagnostics-raw').textContent = '';
+    $('#preview-diagnostics-raw-wrap').hidden = true;
+  }
+
+  function renderPreviewDiagnostics(diagnostics, hasStalePreview) {
+    const panel = $('#preview-diagnostics');
+    $('#preview-diagnostics-note').textContent = hasStalePreview
+      ? 'Showing last successful render'
+      : 'Preview unavailable';
+    $('#preview-diagnostics-summary').textContent = diagnostics.summary;
+
+    const list = $('#preview-diagnostics-list');
+    list.innerHTML = diagnostics.entries.map((entry) => `
+      <li class="preview-diagnostic-item">
+        <div class="preview-diagnostic-severity">${escapeHtml(entry.severity)}</div>
+        <div class="preview-diagnostic-message">${escapeHtml(entry.message)}</div>
+      </li>
+    `).join('');
+
+    const rawWrap = $('#preview-diagnostics-raw-wrap');
+    if (diagnostics.raw) {
+      $('#preview-diagnostics-raw').textContent = diagnostics.raw;
+      rawWrap.hidden = false;
+      rawWrap.open = false;
+    } else {
+      rawWrap.hidden = true;
+      $('#preview-diagnostics-raw').textContent = '';
+    }
+
+    panel.hidden = false;
+  }
+
+  function normalizeTypstDiagnostics(error) {
+    const raw = typeof error === 'string'
+      ? error
+      : JSON.stringify(error, null, 2);
+
+    const diagnostics = Array.isArray(error)
+      ? error
+      : Array.isArray(error?.diagnostics)
+        ? error.diagnostics
+        : [];
+
+    if (diagnostics.length) {
+      const entries = dedupeDiagnostics(diagnostics.map((diag) => ({
+        severity: diag?.severity || 'error',
+        message: diag?.message || String(diag),
+      })));
+      return {
+        summary: buildDiagnosticsSummary(entries),
+        entries,
+        raw,
+      };
+    }
+
+    const fallbackMessage = extractErrorMessage(error);
+    return {
+      summary: fallbackMessage,
+      entries: [{
+        severity: 'error',
+        message: fallbackMessage,
+      }],
+      raw,
+    };
+  }
+
+  function buildDiagnosticsSummary(entries) {
+    const first = entries[0]?.message || 'Typst could not compile this document.';
+    const hint = inferDiagnosticHint(entries);
+    if (entries.length === 1) {
+      return hint ? `${first}. ${hint}` : first;
+    }
+    return hint
+      ? `${first}. ${hint} (${entries.length - 1} more diagnostics)`
+      : `${first} (${entries.length - 1} more diagnostics)`;
+  }
+
+  function dedupeDiagnostics(entries) {
+    const seen = new Set();
+    return entries.filter((entry) => {
+      const key = `${entry.severity}::${entry.message}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  function inferDiagnosticHint(entries) {
+    if (!entries.length) return '';
+    if (entries.every((entry) => entry.message === 'unclosed delimiter')) {
+      return 'You likely opened $, (, [, or { without closing it.';
+    }
+    if (entries.some((entry) => entry.message.includes('expected argument list'))) {
+      return 'A function-style command probably has incomplete parentheses.';
+    }
+    if (entries.some((entry) => entry.message.includes('expected semicolon or line break'))) {
+      return 'This often means Typst is still waiting for the previous expression to end.';
+    }
+    return '';
+  }
+
+  function extractErrorMessage(error) {
+    if (typeof error === 'string' && error.trim()) return error;
+    if (typeof error?.message === 'string' && error.message.trim()) return error.message;
+    return 'Typst could not compile this document.';
+  }
+
+  function escapeHtml(value) {
+    return value
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;');
   }
 
   // ─────────────────────────────────────────────────
