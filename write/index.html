@@ -1613,35 +1613,28 @@ watch the render catch up immediately.
   }
 
   function normalizeTypstDiagnostics(error) {
-    const raw = typeof error === 'string'
-      ? error
-      : JSON.stringify(error, null, 2);
+    // WASM objects don't pass Array.isArray — use Array.from to handle iterables
+    let diagArray = [];
+    try {
+      if (Array.isArray(error)) diagArray = error;
+      else if (error?.diagnostics != null) diagArray = Array.from(error.diagnostics);
+      else if (typeof error[Symbol.iterator] === 'function') diagArray = Array.from(error);
+    } catch (_) {}
 
-    const diagnostics = Array.isArray(error)
-      ? error
-      : Array.isArray(error?.diagnostics)
-        ? error.diagnostics
-        : [];
+    const raw = String(error?.diagnostics ?? error);
 
-    if (diagnostics.length) {
-      const entries = dedupeDiagnostics(diagnostics.map((diag) => ({
-        severity: diag?.severity || 'error',
-        message: diag?.message || String(diag),
+    if (diagArray.length) {
+      const entries = dedupeDiagnostics(diagArray.map((diag) => ({
+        severity: String(diag?.severity ?? 'error'),
+        message: String(diag?.message ?? diag),
       })));
-      return {
-        summary: buildDiagnosticsSummary(entries),
-        entries,
-        raw,
-      };
+      return { summary: buildDiagnosticsSummary(entries), entries, raw };
     }
 
     const fallbackMessage = extractErrorMessage(error);
     return {
       summary: fallbackMessage,
-      entries: [{
-        severity: 'error',
-        message: fallbackMessage,
-      }],
+      entries: [{ severity: 'error', message: fallbackMessage }],
       raw,
     };
   }
