@@ -1153,19 +1153,18 @@ productivity dynamics.
     try {
       const [
         { EditorView, keymap, lineNumbers, highlightActiveLine,
-          highlightActiveLineGutter, drawSelection, highlightSpecialChars },
-        { EditorState },
+          highlightActiveLineGutter, drawSelection, highlightSpecialChars,
+          ViewPlugin, Decoration },
+        { EditorState, RangeSetBuilder },
         { defaultKeymap, history, historyKeymap, indentWithTab },
-        { syntaxHighlighting, bracketMatching, HighlightStyle, StreamLanguage },
+        { bracketMatching },
         { closeBrackets, closeBracketsKeymap },
-        { tags }
       ] = await Promise.all([
         import('https://esm.sh/@codemirror/view@6.35.3'),
         import('https://esm.sh/@codemirror/state@6.5.2'),
         import('https://esm.sh/@codemirror/commands@6.7.2'),
         import('https://esm.sh/@codemirror/language@6.10.8'),
         import('https://esm.sh/@codemirror/autocomplete@6.18.6'),
-        import('https://esm.sh/@lezer/highlight@1.2.1'),
       ]);
 
       // Custom dark theme matching the design system
@@ -1209,83 +1208,80 @@ productivity dynamics.
         },
       });
 
-      // Typst StreamLanguage — tokenizer for real syntax highlighting
-      const typstLanguage = StreamLanguage.define({
-        name: 'typst',
-        startState: () => ({ inBlockComment: false, inMath: false }),
-        token(stream, state) {
-          // Block comment continuation
-          if (state.inBlockComment) {
-            if (stream.match('*/')) { state.inBlockComment = false; }
-            else { stream.next(); }
-            return 'comment';
+      // Typst syntax highlighting — ViewPlugin with direct decorations
+      const D = {
+        comment: Decoration.mark({ attributes: { style: 'color:var(--text-muted);font-style:italic' } }),
+        heading: Decoration.mark({ attributes: { style: 'color:var(--amber-500);font-weight:600' } }),
+        func:    Decoration.mark({ attributes: { style: 'color:#c792ea' } }),
+        math:    Decoration.mark({ attributes: { style: 'color:#c3e88d' } }),
+        string:  Decoration.mark({ attributes: { style: 'color:#c3e88d' } }),
+        number:  Decoration.mark({ attributes: { style: 'color:#f78c6c' } }),
+        label:   Decoration.mark({ attributes: { style: 'color:#ffcb6b' } }),
+      };
+
+      function buildTypstDecorations(view) {
+        const builder = new RangeSetBuilder();
+        const doc = view.state.doc;
+        const text = doc.toString();
+        const ranges = [];
+
+        // Per-line tokens
+        for (let i = 1; i <= doc.lines; i++) {
+          const line = doc.line(i);
+          const t = line.text;
+          const base = line.from;
+
+          // Line comment //
+          const ci = t.indexOf('//');
+          if (ci !== -1) ranges.push([base + ci, line.to, D.comment]);
+
+          const active = ci !== -1 ? t.slice(0, ci) : t;
+
+          // Headings: = at line start
+          if (/^={1,6} /.test(active)) {
+            ranges.push([base, base + active.length, D.heading]);
+            continue; // skip inline tokens inside headings
           }
 
-          // Math mode continuation
-          if (state.inMath) {
-            if (stream.match('$')) { state.inMath = false; return 'string'; }
-            stream.next();
-            return 'string';
-          }
+          // #functions
+          for (const m of active.matchAll(/#[a-zA-Z_][a-zA-Z0-9_-]*/g))
+            ranges.push([base + m.index, base + m.index + m[0].length, D.func]);
+          // "strings"
+          for (const m of active.matchAll(/"[^"]*"/g))
+            ranges.push([base + m.index, base + m.index + m[0].length, D.string]);
+          // <labels>
+          for (const m of active.matchAll(/<[a-zA-Z0-9_:-]+>/g))
+            ranges.push([base + m.index, base + m.index + m[0].length, D.label]);
+          // numbers with optional units
+          for (const m of active.matchAll(/\b\d+(\.\d+)?(pt|em|cm|mm|in|%|fr)?\b/g))
+            ranges.push([base + m.index, base + m.index + m[0].length, D.number]);
+        }
 
-          // Line comment
-          if (stream.match('//')) { stream.skipToEnd(); return 'comment'; }
+        // Inline math $...$  (no newlines)
+        for (const m of text.matchAll(/\$[^$\n]+\$/g))
+          ranges.push([m.index, m.index + m[0].length, D.math]);
+        // Block comments /* ... */
+        for (const m of text.matchAll(/\/\*[\s\S]*?\*\//g))
+          ranges.push([m.index, m.index + m[0].length, D.comment]);
 
-          // Block comment open
-          if (stream.match('/*')) { state.inBlockComment = true; return 'comment'; }
+        // Sort by start position; on ties, longest range first
+        ranges.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
 
-          // Headings: = / == / === at line start
-          if (stream.sol() && stream.match(/^={1,6}\s/)) { return 'header'; }
+        // Add non-overlapping ranges to builder
+        let maxTo = -1;
+        for (const [from, to, dec] of ranges) {
+          if (from >= maxTo) { builder.add(from, to, dec); maxTo = to; }
+        }
+        return builder.finish();
+      }
 
-          // #keyword or #function — the defining Typst feature
-          if (stream.peek() === '#') {
-            stream.next();
-            if (stream.match(/^[a-zA-Z_][a-zA-Z0-9_-]*/)) {
-              return 'keyword';
-            }
-            return null;
-          }
-
-          // Math: $...$ inline or $ ... $ block
-          if (stream.match('$')) {
-            state.inMath = true;
-            return 'string';
-          }
-
-          // Strings
-          if (stream.match('"')) {
-            while (!stream.eol()) {
-              if (stream.next() === '"') break;
-            }
-            return 'string';
-          }
-
-          // Labels: <label>
-          if (stream.match(/^<[a-zA-Z0-9_:-]+>/)) { return 'type'; }
-
-          // Numbers
-          if (stream.match(/^-?[0-9]+(\.[0-9]+)?(pt|em|cm|mm|in|%|fr)?/)) { return 'number'; }
-
-          // Bold *text* and _italic_
-          if (stream.match('*')) { return 'strong'; }
-          if (stream.match('_')) { return 'em'; }
-
-          stream.next();
-          return null;
-        },
-        languageData: { commentTokens: { line: '//' } },
-      });
-
-      const writeHighlightStyle = HighlightStyle.define([
-        { tag: tags.keyword,    color: '#c792ea' },          // #functions
-        { tag: tags.comment,    color: 'var(--text-muted)', fontStyle: 'italic' },
-        { tag: tags.string,     color: '#c3e88d' },          // strings + math
-        { tag: tags.number,     color: '#f78c6c' },
-        { tag: tags.heading,    color: 'var(--amber-500)', fontWeight: '600' },
-        { tag: tags.emphasis,   fontStyle: 'italic' },
-        { tag: tags.strong,     fontWeight: 'bold' },
-        { tag: tags.typeName,   color: '#ffcb6b' },          // <labels>
-      ]);
+      const typstHighlighter = ViewPlugin.fromClass(class {
+        constructor(view) { this.decorations = buildTypstDecorations(view); }
+        update(u) {
+          if (u.docChanged || u.viewportChanged)
+            this.decorations = buildTypstDecorations(u.view);
+        }
+      }, { decorations: v => v.decorations });
 
       // Build editor
       const content = textarea.value;
@@ -1320,9 +1316,8 @@ productivity dynamics.
               ...closeBracketsKeymap,
               indentWithTab,
             ]),
-            typstLanguage.extension,
+            typstHighlighter,
             writeTheme,
-            syntaxHighlighting(writeHighlightStyle),
             updateListener,
             EditorView.lineWrapping,
           ],
@@ -1630,7 +1625,7 @@ productivity dynamics.
         closeDocList();
       }
     }
-  });
+  }, { capture: true });
 
   // ─────────────────────────────────────────────────
   // Connected mode — server API
