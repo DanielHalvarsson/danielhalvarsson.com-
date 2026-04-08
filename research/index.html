@@ -23,7 +23,6 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -67,9 +66,10 @@
 
     /* ── HERO ── */
     .hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column; justify-content: flex-end;
-      padding: 8rem 2.5rem 5rem;
+      display: flex; flex-direction: column; justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 10rem 2.5rem 5rem;
       position: relative;
       overflow: hidden;
     }
@@ -77,12 +77,11 @@
     .hero-bg {
       position: absolute; inset: 0; z-index: 0;
       background:
-        radial-gradient(ellipse 80% 60% at 70% 40%, rgba(232,160,64,0.055) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 80% at 10% 80%, rgba(107,170,124,0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 60% at 50% 45%, rgba(232,160,64,0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 80% at 20% 80%, rgba(107,170,124,0.03) 0%, transparent 60%),
         linear-gradient(180deg, #0d1117 0%, #111720 100%);
     }
 
-    /* subtle grid */
     .hero-bg::after {
       content: '';
       position: absolute; inset: 0;
@@ -93,90 +92,40 @@
       mask-image: linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%);
     }
 
-    .hero-content { position: relative; z-index: 1; max-width: 900px; }
+    .hero-content {
+      position: relative; z-index: 1;
+      max-width: 700px;
+    }
 
     .hero-tag {
       font-family: 'DM Mono', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.18em;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       color: var(--amber);
-      margin-bottom: 1.8rem;
-      display: flex; align-items: center; gap: 0.8rem;
-    }
-    .hero-tag::before {
-      content: '';
-      display: inline-block;
-      width: 32px; height: 1px;
-      background: var(--amber);
+      margin-bottom: 1.5rem;
     }
 
-    h1 {
+    .hero h1 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
       font-weight: 300;
-      line-height: 1.18;
       color: var(--white);
-      letter-spacing: -0.01em;
-      margin-bottom: 2.2rem;
-      max-width: 820px;
-    }
-    h1 em {
-      font-style: italic;
-      color: var(--amber);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.5rem;
     }
 
-    .hero-meta {
-      display: flex; flex-wrap: wrap; gap: 1rem 2.5rem;
-      margin-bottom: 2.8rem;
-    }
-    .hero-meta-item {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-    .hero-meta-item span {
+    .hero p {
+      font-size: 1.05rem;
       color: var(--text);
-      display: block;
-      margin-top: 0.15rem;
-    }
-
-    .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-    .btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.7rem 1.5rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-decoration: none;
-      border-radius: 2px;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background: var(--amber);
-      color: #0d1117;
-      border: 1px solid var(--amber);
-    }
-    .btn-primary:hover {
-      background: #d4903a;
-      border-color: #d4903a;
-    }
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-outline:hover {
-      border-color: rgba(255,255,255,0.25);
-      color: var(--white);
+      line-height: 1.8;
+      max-width: 560px;
+      margin: 0 auto;
     }
 
     /* ── SECTIONS ── */
-    section { padding: 6rem 2.5rem; }
+    section { padding: 5rem 2.5rem; }
     .container { max-width: 1000px; margin: 0 auto; }
 
     .section-label {
@@ -195,302 +144,97 @@
       opacity: 0.4;
     }
 
-    h2 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.8rem, 3vw, 2.6rem);
-      font-weight: 300;
-      color: var(--white);
-      line-height: 1.25;
-      margin-bottom: 1.5rem;
+    /* ── PUBLICATION CARDS ── */
+    .pub-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
     }
 
-    p {
-      color: var(--text);
-      font-size: 0.98rem;
-      line-height: 1.8;
-      max-width: 680px;
+    .pub-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 2rem 2.5rem;
+      transition: border-color 0.2s, transform 0.2s;
+      display: block;
+      text-decoration: none;
+    }
+    .pub-card:hover {
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+    .pub-card-static {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 2rem 2.5rem;
     }
 
-    /* ── FINDING CALLOUT ── */
-    .finding-callout {
-      background: var(--bg2);
-      border-left: 3px solid var(--amber);
-      padding: 2.5rem 3rem;
-      margin: 3rem 0;
-      position: relative;
-      overflow: hidden;
-    }
-    .finding-callout::before {
-      content: '≈ 0';
-      position: absolute;
-      right: 2.5rem; top: 50%;
-      transform: translateY(-50%);
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 7rem;
-      font-weight: 300;
-      color: rgba(232,160,64,0.07);
-      line-height: 1;
-      pointer-events: none;
-    }
-    .finding-callout .finding-label {
+    .pub-status {
       font-family: 'DM Mono', monospace;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: var(--amber);
       margin-bottom: 0.8rem;
+      display: inline-block;
     }
-    .finding-callout .finding-text {
+    .pub-status.working { color: var(--amber); }
+    .pub-status.published { color: var(--green); }
+    .pub-status.report { color: var(--muted); }
+
+    .pub-card h3, .pub-card-static h3 {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+      font-size: 1.3rem;
       font-weight: 300;
       color: var(--white);
-      line-height: 1.4;
-      max-width: 580px;
-    }
-    .finding-callout .finding-sub {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin-top: 1rem;
-      max-width: 560px;
-      font-family: 'Outfit', sans-serif;
-    }
-
-    /* ── RESULT CARDS ── */
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1px;
-      background: var(--border);
-      margin: 3rem 0;
-    }
-    .card {
-      background: var(--bg2);
-      padding: 2rem;
-    }
-    .card-num {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2.8rem;
-      font-weight: 300;
-      line-height: 1;
-      margin-bottom: 0.5rem;
-    }
-    .card-num.amber { color: var(--amber); }
-    .card-num.green { color: var(--green); }
-    .card-num.muted { color: var(--muted); }
-    .card-title {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--white);
-      margin-bottom: 0.4rem;
-      letter-spacing: 0.01em;
-    }
-    .card-desc {
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    /* ── TABLE ── */
-    .table-wrap {
-      overflow-x: auto;
-      margin: 2.5rem 0;
-      border: 1px solid var(--border);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.76rem;
-    }
-    thead tr {
-      background: var(--bg3);
-    }
-    th {
-      padding: 0.9rem 1rem;
-      text-align: center;
-      font-weight: 400;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-    th.left { text-align: left; }
-    td {
-      padding: 0.75rem 1rem;
-      text-align: center;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-      color: var(--text);
-    }
-    td.left { text-align: left; font-family: 'Outfit', sans-serif; font-size: 0.82rem; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(255,255,255,0.02); }
-    .sig { color: var(--amber); }
-    .insig { color: var(--muted); }
-    .stars { color: var(--amber); font-size: 0.65rem; vertical-align: super; }
-    .se { font-size: 0.68rem; color: var(--muted); display: block; }
-    .table-note {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 1rem;
-      line-height: 1.6;
-      font-family: 'Outfit', sans-serif;
-    }
-
-    /* group header row */
-    .thead-group th {
-      font-size: 0.68rem;
-      color: rgba(232,160,64,0.7);
-      padding-bottom: 0.3rem;
-      padding-top: 0.7rem;
-      border-bottom: none;
-    }
-
-    /* ── TIMELINE / CHART-LIKE ── */
-    .chart-area {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      padding: 2.5rem;
-      margin: 2.5rem 0;
-    }
-    .chart-title {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 2rem;
-    }
-    .bar-chart { display: flex; flex-direction: column; gap: 0.9rem; }
-    .bar-row {
-      display: grid;
-      grid-template-columns: 130px 1fr 60px;
-      align-items: center;
-      gap: 1rem;
-    }
-    .bar-label {
-      font-size: 0.78rem;
-      color: var(--muted);
-      font-family: 'DM Mono', monospace;
-      text-align: right;
-    }
-    .bar-track {
-      height: 6px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      border-radius: 2px;
-      transition: width 1s ease;
-    }
-    .bar-fill.amber { background: var(--amber); }
-    .bar-fill.green { background: var(--green); }
-    .bar-fill.muted { background: var(--muted); opacity: 0.4; }
-    .bar-val {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--text);
-    }
-
-    /* ── METHODOLOGY GRID ── */
-    .method-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin: 2.5rem 0;
-    }
-    .method-item {
-      padding: 1.5rem;
-      border: 1px solid var(--border);
-      border-top: 2px solid var(--amber);
-    }
-    .method-item h4 {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--amber);
+      line-height: 1.3;
       margin-bottom: 0.6rem;
     }
-    .method-item p {
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.65;
-    }
 
-    /* ── REPLICATION ── */
-    .repo-block {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      padding: 2.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-    .repo-block h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.5rem;
-      font-weight: 300;
-      color: var(--white);
+    .pub-authors {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
       margin-bottom: 0.5rem;
     }
-    .repo-block p {
-      font-size: 0.85rem;
-      color: var(--muted);
-      max-width: 440px;
-    }
-    .repo-tags {
-      display: flex; flex-wrap: wrap; gap: 0.5rem;
-      margin-top: 1.2rem;
-    }
-    .tag {
+
+    .pub-journal {
       font-family: 'DM Mono', monospace;
       font-size: 0.68rem;
-      letter-spacing: 0.08em;
-      padding: 0.25rem 0.7rem;
-      border: 1px solid var(--border);
       color: var(--muted);
-      border-radius: 2px;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.8rem;
+      opacity: 0.7;
     }
 
-    /* ── AUTHORS ── */
-    .authors-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1px;
-      background: var(--border);
-      margin: 2rem 0;
+    .pub-desc {
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.7;
+      max-width: none;
     }
-    .author-card {
-      background: var(--bg2);
-      padding: 1.8rem;
-    }
-    .author-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.15rem;
-      font-weight: 400;
-      color: var(--white);
-      margin-bottom: 0.3rem;
-    }
-    .author-inst {
-      font-size: 0.76rem;
-      color: var(--muted);
-      line-height: 1.5;
+
+    .pub-link {
       font-family: 'DM Mono', monospace;
-    }
-    .author-inst a {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       color: var(--amber);
-      text-decoration: none;
-      opacity: 0.8;
-      font-size: 0.7rem;
-      display: block;
-      margin-top: 0.4rem;
+      margin-top: 1rem;
+      display: inline-block;
+      transition: color 0.2s;
     }
-    .author-inst a:hover { opacity: 1; }
+    .pub-card:hover .pub-link { color: var(--white); }
+
+    .empty-section {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      padding: 2rem 0;
+      opacity: 0.6;
+    }
 
     /* ── FOOTER ── */
     footer {
@@ -515,14 +259,7 @@
       letter-spacing: 0.08em;
     }
 
-    /* divider */
-    hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 3rem 0;
-    }
-
-    /* ── FADE-IN ANIMATION ── */
+    /* ── FADE-IN ── */
     .fade-in {
       opacity: 0;
       transform: translateY(20px);
@@ -536,11 +273,9 @@
     @media (max-width: 640px) {
       nav { padding: 1rem 1.5rem; }
       .nav-links { gap: 1.2rem; }
-      .hero { padding: 7rem 1.5rem 4rem; }
-      section { padding: 4rem 1.5rem; }
-      .finding-callout { padding: 1.8rem; }
-      .finding-callout::before { display: none; }
-      .repo-block { flex-direction: column; }
+      .hero { padding: 8rem 1.5rem 3rem; }
+      section { padding: 3.5rem 1.5rem; }
+      .pub-card, .pub-card-static { padding: 1.5rem; }
     }
   </style>
 </head>
@@ -550,9 +285,9 @@
 <nav>
   <a href="/" class="nav-logo">Daniel Halvarsson</a>
   <div class="nav-links">
-    <a href="#abstract">Abstract</a>
-    <a href="#results">Results</a>
-    <a href="#replication">Replication</a>
+    <a href="/research">Research</a>
+    <a href="/system">System</a>
+    <a href="/builds">Builds</a>
   </div>
 </nav>
 
@@ -560,380 +295,126 @@
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-content fade-in">
-    <div class="hero-tag">Working Paper · Energy Economics</div>
-    <h1>
-      Electricity Market Structure and
-      <em>Consequences for Wind and Solar Uptake</em>
-      in the EU-27
-    </h1>
-    <div class="hero-meta">
-      <div class="hero-meta-item">
-        AUTHORS
-        <span>Grafström · Halvarsson · Herold · Vinberg</span>
-      </div>
-      <div class="hero-meta-item">
-        COVERAGE
-        <span>EU-27 · 2000–2022</span>
-      </div>
-      <div class="hero-meta-item">
-        FUNDING
-        <span>Swedish Competition Authority</span>
-      </div>
-      <div class="hero-meta-item">
-        METHODS
-        <span>Panel FE · AB-GMM · Bias Correction</span>
-      </div>
-    </div>
-    <div class="hero-actions">
-      <a href="manuscript.pdf" class="btn btn-primary" download>
-        ↓ Download PDF
+    <div class="hero-tag">Publications</div>
+    <h1>Research</h1>
+    <p>
+      Empirical economics, firm dynamics, and structural transformation.
+      19+ publications spanning productivity, growth, labor markets, and innovation.
+    </p>
+  </div>
+</section>
+
+<!-- WORKING PAPERS -->
+<section>
+  <div class="container">
+    <div class="section-label">01 — Working Papers</div>
+    <div class="pub-grid fade-in">
+
+      <a href="/research/energy" class="pub-card">
+        <div class="pub-status working">Working Paper · 2025</div>
+        <h3>Electricity Market Structure and Consequences for Wind and Solar Uptake in the EU-27</h3>
+        <div class="pub-authors">Grafström, Halvarsson, Herold, Vinberg</div>
+        <p class="pub-desc">Market concentration doesn't impede renewable deployment. Policy design matters more than market structure.</p>
+        <span class="pub-link">Read paper →</span>
       </a>
-      <a href="#results" class="btn btn-outline">
-        View Results →
-      </a>
+
+      <div class="pub-card-static">
+        <div class="pub-status working">Working Paper · 2024</div>
+        <h3>The Impact of High-Skilled Migration on Productivity in Swedish Firms</h3>
+        <div class="pub-authors">Halvarsson</div>
+        <div class="pub-journal">Ratio Working Paper No. 374</div>
+        <p class="pub-desc">Studying how high-skilled immigration affects firm-level productivity using Swedish matched employer-employee data.</p>
+      </div>
+
+      <div class="pub-card-static">
+        <div class="pub-status working">Working Paper · 2023</div>
+        <h3>City Size, Employer Concentration, and Wage Income Inequality</h3>
+        <div class="pub-authors">Halvarsson, Korpi</div>
+        <div class="pub-journal">Ratio Working Paper No. 363</div>
+        <p class="pub-desc">How urban scale and employer concentration interact to shape the distribution of wage income.</p>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- ABSTRACT -->
-<section id="abstract" style="background: var(--bg2);">
+<!-- PUBLISHED -->
+<section style="background: var(--bg2);">
   <div class="container">
-    <div class="section-label">01 — Abstract</div>
-    <h2>Does market concentration impede renewable deployment?</h2>
-    <p style="margin-top: 1.5rem;">
-      This paper examines whether concentration in electricity generation affects the deployment of
-      wind and solar capacity across the 27 European Union member states over 2000–2022. Market
-      concentration is measured by the generation share of the largest electricity producer, and
-      deployment is measured as installed wind and solar capacity relative to total national capacity.
-    </p>
-    <p style="margin-top: 1rem;">
-      Using dynamic estimation methods that account for persistence, unobserved heterogeneity,
-      and reverse causality, the analysis finds <strong style="color: var(--white);">no systematic relationship</strong> between
-      market concentration and subsequent wind or solar deployment — a result robust across
-      alternative measures, bias-corrected estimators, balanced samples, and extensive
-      heterogeneity analyses.
-    </p>
+    <div class="section-label">02 — Published</div>
+    <div class="pub-grid fade-in">
 
-    <div class="finding-callout" style="margin-top: 3rem;">
-      <div class="finding-label">Core finding</div>
-      <div class="finding-text">
-        Within the EU institutional setting, market concentration per se is not a
-        first-order constraint on renewable uptake.
+      <div class="pub-card-static">
+        <div class="pub-status published">Published · 2024</div>
+        <h3>Do gender norms travel within corporations?</h3>
+        <div class="pub-authors">Lark, Tingvall, Vahter, Videnord</div>
+        <div class="pub-journal">Applied Economics Letters</div>
+        <p class="pub-desc">Whether corporate structures serve as a conduit for gender norms across national borders.</p>
       </div>
-      <div class="finding-sub">
-        Deployment is primarily driven by policy settings — particularly feed-in tariffs —
-        and by the path dependence inherent in installed capacity. This cautions against
-        extrapolating country-specific findings to EU-wide policy conclusions.
+
+      <div class="pub-card-static">
+        <div class="pub-status published">Published · 2022</div>
+        <h3>Amundsen versus Scott: Are growth paths related to firm performance?</h3>
+        <div class="pub-authors">Coad, Daunfeldt</div>
+        <div class="pub-journal">Small Business Economics 59, 593–610</div>
+        <p class="pub-desc">Whether the path a firm takes to reach a given size matters for subsequent performance.</p>
       </div>
+
+      <div class="pub-card-static">
+        <div class="pub-status published">Published · 2021</div>
+        <h3>Direct and indirect effects of private- and government-sponsored venture capital</h3>
+        <div class="pub-authors">Engberg, Gustavsson Tingvall</div>
+        <div class="pub-journal">Empirical Economics</div>
+        <p class="pub-desc">Comparing the effectiveness of private versus government-backed venture capital on firm outcomes.</p>
+      </div>
+
+      <div class="pub-card-static">
+        <div class="pub-status published">Published · 2020</div>
+        <h3>Maximum Likelihood Estimation of Asymmetric Double Type II Pareto Distributions</h3>
+        <div class="pub-authors">Halvarsson</div>
+        <div class="pub-journal">Journal of Statistical Theory and Practice</div>
+        <p class="pub-desc">A novel estimation approach for asymmetric heavy-tailed distributions common in firm growth data.</p>
+      </div>
+
+      <div class="pub-card-static">
+        <div class="pub-status published">Published · 2018</div>
+        <h3>Entrepreneurship and income inequality</h3>
+        <div class="pub-authors">Korpi, Wennberg</div>
+        <div class="pub-journal">Journal of Economic Behavior &amp; Organization</div>
+        <p class="pub-desc">How entrepreneurial activity shapes the distribution of income across the economy.</p>
+      </div>
+
+      <div class="pub-card-static">
+        <div class="pub-status published">Published · 2018</div>
+        <h3>Bursting into life: firm growth and growth persistence by age</h3>
+        <div class="pub-authors">Coad, Daunfeldt</div>
+        <div class="pub-journal">Small Business Economics</div>
+        <p class="pub-desc">How firm age relates to growth dynamics and the persistence of growth episodes.</p>
+      </div>
+
+      <div class="pub-card-static">
+        <div class="pub-status published">Published · 2015</div>
+        <h3>Are high-growth firms one-hit wonders?</h3>
+        <div class="pub-authors">Daunfeldt</div>
+        <div class="pub-journal">Small Business Economics</div>
+        <p class="pub-desc">Whether firms that experience rapid growth can sustain it or revert to the mean.</p>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- KEY NUMBERS -->
+<!-- REPORTS & POLICY -->
 <section>
   <div class="container">
-    <div class="section-label">02 — Data at a Glance</div>
-    <div class="cards fade-in">
-      <div class="card">
-        <div class="card-num amber">27</div>
-        <div class="card-title">EU Member States</div>
-        <div class="card-desc">Annual country-level panel drawn primarily from Eurostat and the European Commission, 2000–2022.</div>
-      </div>
-      <div class="card">
-        <div class="card-num amber">23yr</div>
-        <div class="card-title">Time Span</div>
-        <div class="card-desc">One of the first harmonized EU-wide assessments spanning more than two decades of energy transition.</div>
-      </div>
-      <div class="card">
-        <div class="card-num green">32%</div>
-        <div class="card-title">Wind + Solar Share by 2022</div>
-        <div class="card-desc">Up from 1.5% in 2000. Wind at 15.7%, solar at 16.3% of total installed capacity.</div>
-      </div>
-      <div class="card">
-        <div class="card-num muted">55%</div>
-        <div class="card-title">Average Largest Producer Share</div>
-        <div class="card-desc">Ranging from 24% (Finland) to 88% (Cyprus), reflecting wide cross-country variation in market structure.</div>
-      </div>
+    <div class="section-label">03 — Reports &amp; Policy</div>
+    <div class="pub-grid fade-in">
+
+      <div class="empty-section">Publications will be added here.</div>
+
+      <!-- ADD MORE PUBLICATIONS HERE -->
+
     </div>
-
-    <!-- EU renewable share chart -->
-    <div class="chart-area fade-in" style="margin-top: 2rem;">
-      <div class="chart-title">EU-27 average renewable capacity share (wind + solar) — selected years</div>
-      <div class="bar-chart">
-        <div class="bar-row">
-          <div class="bar-label">2000</div>
-          <div class="bar-track"><div class="bar-fill amber" style="width: 4.7%"></div></div>
-          <div class="bar-val">1.5%</div>
-        </div>
-        <div class="bar-row">
-          <div class="bar-label">2005</div>
-          <div class="bar-track"><div class="bar-fill amber" style="width: 12%"></div></div>
-          <div class="bar-val">3.9%</div>
-        </div>
-        <div class="bar-row">
-          <div class="bar-label">2010</div>
-          <div class="bar-track"><div class="bar-fill amber" style="width: 24%"></div></div>
-          <div class="bar-val">7.8%</div>
-        </div>
-        <div class="bar-row">
-          <div class="bar-label">2015</div>
-          <div class="bar-track"><div class="bar-fill amber" style="width: 54%"></div></div>
-          <div class="bar-val">17.4%</div>
-        </div>
-        <div class="bar-row">
-          <div class="bar-label">2020</div>
-          <div class="bar-track"><div class="bar-fill amber" style="width: 79%"></div></div>
-          <div class="bar-val">25.5%</div>
-        </div>
-        <div class="bar-row">
-          <div class="bar-label">2022</div>
-          <div class="bar-track"><div class="bar-fill green" style="width: 100%"></div></div>
-          <div class="bar-val">32.0%</div>
-        </div>
-      </div>
-      <p style="font-size: 0.75rem; color: var(--muted); margin-top: 1.5rem; font-family: 'DM Mono', monospace;">
-        Source: Eurostat / European Commission. Own calculations.
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- RESULTS -->
-<section id="results" style="background: var(--bg2);">
-  <div class="container">
-    <div class="section-label">03 — Main Results</div>
-    <h2>Effect of market concentration on renewable deployment</h2>
-    <p style="margin-top: 1rem;">
-      The table below reports estimates across pooled OLS, fixed-effects OLS, and Arellano–Bond GMM,
-      for both the full sample and a bias-corrected balanced panel following Chen et al. (2019).
-      The coefficient of interest is the lagged market share of the largest producer (MS<sub>t−1</sub>).
-    </p>
-
-    <div class="table-wrap fade-in">
-      <table>
-        <thead>
-          <tr class="thead-group">
-            <th class="left" colspan="2"></th>
-            <th colspan="4" style="border-left: 1px solid var(--border);">Base Sample</th>
-            <th colspan="2" style="border-left: 1px solid var(--border);">Balanced Sample</th>
-          </tr>
-          <tr>
-            <th class="left" colspan="2">Dependent variable: Renewable share<sub>t</sub></th>
-            <th>(1) OLS</th>
-            <th>(2) FE-OLS</th>
-            <th>(3) AB-GMM</th>
-            <th>(4) FE-OLS</th>
-            <th style="border-left: 1px solid var(--border);">(7) FE-OLS</th>
-            <th>(8) AB-GMM</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="left" colspan="2">Renewable share<sub>t−1</sub></td>
-            <td class="sig">1.016<span class="stars">***</span><span class="se">(0.010)</span></td>
-            <td class="sig">1.003<span class="stars">***</span><span class="se">(0.021)</span></td>
-            <td class="sig">0.747<span class="stars">***</span><span class="se">(0.087)</span></td>
-            <td class="sig">—</td>
-            <td class="sig" style="border-left: 1px solid var(--border);">0.996<span class="stars">***</span><span class="se">(0.023)</span></td>
-            <td class="sig">0.823<span class="stars">***</span><span class="se">(0.087)</span></td>
-          </tr>
-          <tr style="background: rgba(232,160,64,0.04);">
-            <td class="left" colspan="2" style="color: var(--white); font-weight: 500;">Market share<sub>t−1</sub> (MS<sub>t−1</sub>) — <em style="color: var(--amber); font-family: Cormorant Garamond, serif; font-style:italic;">key coefficient</em></td>
-            <td class="insig">−0.003<span class="se">(0.003)</span></td>
-            <td class="insig">0.006<span class="se">(0.007)</span></td>
-            <td class="insig">−0.006<span class="se">(0.025)</span></td>
-            <td class="sig">−0.063<span class="stars">***</span><span class="se">(0.019)</span></td>
-            <td class="insig" style="border-left: 1px solid var(--border);">0.007<span class="se">(0.013)</span></td>
-            <td class="insig">−0.010<span class="se">(0.025)</span></td>
-          </tr>
-          <tr>
-            <td class="left" colspan="2">Observations</td>
-            <td>515</td><td>515</td><td>485</td><td>516</td>
-            <td style="border-left: 1px solid var(--border);">399</td><td>378</td>
-          </tr>
-          <tr>
-            <td class="left" colspan="2">AR(2) p-value</td>
-            <td>—</td><td>—</td>
-            <td style="color: var(--green);">0.152</td>
-            <td>—</td>
-            <td style="border-left: 1px solid var(--border);">—</td>
-            <td style="color: var(--green);">0.115</td>
-          </tr>
-          <tr>
-            <td class="left" colspan="2">Bias correction [bootstrapped SE]</td>
-            <td>—</td><td>—</td><td>—</td><td>—</td>
-            <td style="border-left: 1px solid var(--border);">0.003 [0.033]</td>
-            <td>0.049 [0.058]</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="table-note">
-      All models include full sets of country and year fixed effects. Column (4) excludes the lagged dependent variable — 
-      its significant negative coefficient cannot be interpreted causally due to dynamic panel bias. 
-      Robust standard errors in parentheses. *** p&lt;0.01.
-    </p>
-
-    <hr />
-
-    <h2 style="margin-top: 2rem;">What does drive renewable deployment?</h2>
-    <div class="method-grid fade-in" style="margin-top: 1.5rem;">
-      <div class="method-item">
-        <h4>Path Dependence</h4>
-        <p>The strongest predictor is lagged renewable share — deployment is self-reinforcing through accumulated know-how, supply chains, and learning-by-doing.</p>
-      </div>
-      <div class="method-item">
-        <h4>Feed-In Tariffs</h4>
-        <p>The only policy variable consistently significant across FE-OLS and AB-GMM specifications. Support scheme design matters more than market structure.</p>
-      </div>
-      <div class="method-item">
-        <h4>Regional Catch-Up</h4>
-        <p>Eastern and Western Europe show more positive within-country concentration slopes than Northern Europe — reflecting deployment acceleration despite incumbent dominance.</p>
-      </div>
-      <div class="method-item">
-        <h4>Not Market Structure</h4>
-        <p>Concentration, unbundling, competitive market rules, independent power producers, and fossil fuel subsidies all yield null or fragile effects.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- METHODOLOGY -->
-<section>
-  <div class="container">
-    <div class="section-label">04 — Methodology</div>
-    <h2>Empirical strategy</h2>
-    <p style="margin-top: 1rem;">
-      The baseline specification is a dynamic panel model with country and year fixed effects,
-      estimated to address endogeneity from reverse causality between concentration and renewable deployment.
-      The dynamic structure captures the strong persistence in renewable capacity stocks.
-    </p>
-
-    <div style="background: var(--bg2); border: 1px solid var(--border); padding: 2rem; margin: 2rem 0; font-family: 'DM Mono', monospace; font-size: 0.82rem; color: var(--text); line-height: 2;">
-      <span style="color: var(--amber);">RS<sub>it</sub></span> =
-      α · <span style="color: var(--green);">RS<sub>it−1</sub></span> +
-      γ · <span style="color: var(--amber);">MS<sub>it−1</sub></span> +
-      x′<sub>it−1</sub>β +
-      δ<sub>t</sub> + c<sub>i</sub> + ε<sub>it</sub>
-      <div style="margin-top: 1rem; font-size: 0.72rem; color: var(--muted);">
-        RS = renewable share (wind + solar, % of installed capacity) &nbsp;·&nbsp;
-        MS = largest producer market share &nbsp;·&nbsp;
-        c<sub>i</sub> = country FE &nbsp;·&nbsp; δ<sub>t</sub> = year FE
-      </div>
-    </div>
-
-    <div class="method-grid fade-in">
-      <div class="method-item">
-        <h4>Estimators</h4>
-        <p>Pooled OLS, Fixed Effects OLS, and Arellano–Bond (1991) GMM. Triangulated to guard against dynamic panel bias and instrument proliferation.</p>
-      </div>
-      <div class="method-item">
-        <h4>Bias Correction</h4>
-        <p>Split-sample bias-correction following Chen, Chernozhukov & Fernández-Val (2019) on a balanced panel of 21 countries, with bootstrapped standard errors.</p>
-      </div>
-      <div class="method-item">
-        <h4>Identification</h4>
-        <p>Lagged levels as internal instruments under Arellano–Bond orthogonality conditions. AR(1)/AR(2) and Hansen tests reported throughout.</p>
-      </div>
-      <div class="method-item">
-        <h4>Robustness</h4>
-        <p>Alternative outcome variables (solar/wind separate, log capacity, incl. hydro), alternative concentration proxies, 5-year interval data, and retail-market measures.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- REPLICATION -->
-<section id="replication" style="background: var(--bg2);">
-  <div class="container">
-    <div class="section-label">05 — Open Research</div>
-    <h2>Replication & Data</h2>
-    <p style="margin-top: 1rem;">
-      This paper comes with a fully reproducible Python pipeline alongside the original Stata code.
-      Data is publicly available from Eurostat, the European Commission, World Bank, and OECD.
-    </p>
-
-    <div class="repo-block fade-in" style="margin-top: 2.5rem;">
-      <div>
-        <h3>GitHub Repository</h3>
-        <p>
-          Full data, cleaning scripts, analysis code, and output tables.
-          The Python replication uses <code style="font-family: DM Mono, monospace; font-size: 0.85em; color: var(--amber);">linearmodels</code> for panel estimation,
-          with the original Stata do-files preserved for reference.
-        </p>
-        <div class="repo-tags">
-          <span class="tag">Python</span>
-          <span class="tag">linearmodels</span>
-          <span class="tag">pandas</span>
-          <span class="tag">Stata</span>
-          <span class="tag">panel FE</span>
-          <span class="tag">AB-GMM</span>
-          <span class="tag">EU-27</span>
-        </div>
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 0.8rem; flex-shrink: 0;">
-        <a href="#" class="btn btn-primary">View on GitHub →</a>
-        <a href="manuscript.pdf" class="btn btn-outline" download>Download Paper</a>
-      </div>
-    </div>
-
-    <div class="method-grid" style="margin-top: 2rem;">
-      <div class="method-item">
-        <h4>Primary Data</h4>
-        <p>Eurostat installed capacity. European Commission electricity market pocketbook. Annual, 2000–2022.</p>
-      </div>
-      <div class="method-item">
-        <h4>Market Structure</h4>
-        <p>World Bank Global Power Market Structure Database (GPMSD). Regulatory regime classifications.</p>
-      </div>
-      <div class="method-item">
-        <h4>Policy Variables</h4>
-        <p>OECD feed-in tariff database (wind + solar, USD/kWh). OECD fossil fuel support as % of GDP.</p>
-      </div>
-      <div class="method-item">
-        <h4>Macroeconomic</h4>
-        <p>World Bank: GDP per capita, natural resource rents. European Commission: electricity consumption, net imports.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- AUTHORS -->
-<section>
-  <div class="container">
-    <div class="section-label">06 — Authors</div>
-    <div class="authors-grid fade-in">
-      <div class="author-card">
-        <div class="author-name">Jonas Grafström</div>
-        <div class="author-inst">
-          Luleå University of Technology<br>The Ratio Institute
-          <a href="mailto:jonas.grafstrom@ltu.se">jonas.grafstrom@ltu.se</a>
-        </div>
-      </div>
-      <div class="author-card">
-        <div class="author-name">Daniel Halvarsson</div>
-        <div class="author-inst">
-          The Ratio Institute
-          <a href="mailto:daniel.halvarsson@ratio.se">daniel.halvarsson@ratio.se</a>
-        </div>
-      </div>
-      <div class="author-card">
-        <div class="author-name">Theo Herold</div>
-        <div class="author-inst">
-          Hanken School of Economics<br>Helsinki GSE · Ratio Institute
-          <a href="mailto:theo.herold@hanken.fi">theo.herold@hanken.fi</a>
-        </div>
-      </div>
-      <div class="author-card">
-        <div class="author-name">Nadja Vinberg</div>
-        <div class="author-inst">
-          The Ratio Institute
-        </div>
-      </div>
-    </div>
-    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 1.5rem;">
-      Financial support from the Swedish Competition Authority (Konkurrensverket) is gratefully acknowledged.
-    </p>
   </div>
 </section>
 
@@ -944,7 +425,6 @@
 </footer>
 
 <script>
-  // Fade-in on scroll
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -956,7 +436,6 @@
 
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-  // Hero immediate
   setTimeout(() => {
     document.querySelector('.hero .fade-in')?.classList.add('visible');
   }, 100);
