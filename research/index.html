@@ -37,15 +37,17 @@
     /* ── NAV ── */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      padding: 1.1rem 2.5rem;
+      height: 60px;
+      padding: 0 48px;
       display: flex; justify-content: space-between; align-items: center;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
       background: rgba(13,17,23,0.85);
       backdrop-filter: blur(12px);
     }
     .nav-logo {
       font-family: 'Cormorant Garamond', serif;
       font-size: 1.1rem;
+      font-weight: 300;
       font-style: italic;
       color: var(--white);
       text-decoration: none;
@@ -56,13 +58,13 @@
       font-size: 0.78rem;
       font-family: 'DM Mono', monospace;
       font-weight: 300;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
+      letter-spacing: 0.46px;
       color: var(--muted);
       text-decoration: none;
       transition: color 0.2s;
     }
     .nav-links a:hover { color: var(--amber); }
+    .nav-links a.active { color: rgb(201, 151, 46); }
 
     /* ── HERO ── */
     .hero {
@@ -271,7 +273,7 @@
     }
 
     @media (max-width: 640px) {
-      nav { padding: 1rem 1.5rem; }
+      nav { padding: 0 24px; }
       .nav-links { gap: 1.2rem; }
       .hero { padding: 8rem 1.5rem 3rem; }
       section { padding: 3.5rem 1.5rem; }
@@ -285,9 +287,11 @@
 <nav>
   <a href="/" class="nav-logo">Daniel Halvarsson</a>
   <div class="nav-links">
-    <a href="/research">Research</a>
+    <a href="/research" class="active">Research</a>
+    <a href="/presentations">Presentations</a>
     <a href="/system">System</a>
     <a href="/builds">Builds</a>
+    <a href="/write">Write</a>
   </div>
 </nav>
 
