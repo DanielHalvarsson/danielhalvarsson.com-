@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Waking System — Builds — Daniel Halvarsson</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0d1117;
+      --bg2:      #151c26;
+      --bg3:      #1c2535;
+      --border:   rgba(255,255,255,0.07);
+      --text:     #e8e0d4;
+      --muted:    #8a8a8a;
+      --amber:    #e8a040;
+      --amber2:   #c4782a;
+      --green:    #6baa7c;
+      --red:      #c46a6a;
+      --white:    #f5f0ea;
+      --telegram: #5b9bd5;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      padding: 1.1rem 2.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(12px);
+    }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-style: italic;
+      color: var(--white);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-size: 0.78rem;
+      font-family: 'DM Mono', monospace;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--amber); }
+
+    /* ── ARTICLE ── */
+    .article {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 9rem 2.5rem 5rem;
+    }
+
+    .article-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 0.8rem;
+    }
+
+    .article-date {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 2.5rem;
+    }
+
+    .article h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 300;
+      color: var(--white);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+    }
+
+    .article-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 3.5rem;
+    }
+
+    .article h2 {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-top: 3.5rem;
+      margin-bottom: 1.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .article h2:first-of-type {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .article p {
+      font-size: 1rem;
+      color: var(--text);
+      line-height: 1.85;
+      margin-bottom: 1.5rem;
+      max-width: none;
+    }
+
+    .article ul {
+      list-style: none;
+      margin: 1.5rem 0;
+      padding: 0;
+    }
+
+    .article li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .article li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--amber);
+    }
+
+    /* ── TELEGRAM MOCKUP ── */
+    .tg-msg {
+      background: var(--bg3);
+      border-left: 3px solid var(--telegram);
+      border-radius: 0 8px 8px 0;
+      padding: 1.2rem 1.5rem;
+      margin: 1.5rem 0 2rem;
+      max-width: 480px;
+    }
+    .tg-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--telegram);
+      margin-bottom: 0.5rem;
+    }
+    .tg-msg p {
+      font-size: 0.92rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 0;
+      max-width: none;
+    }
+
+    /* ── ARTICLE FOOTER ── */
+    .article-footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem 3rem;
+    }
+
+    .article-footer a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--amber);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .article-footer a:hover { color: var(--white); }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 3rem 2.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-left {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+    .footer-right {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 0.08em;
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      .article { padding: 7rem 1.5rem 3rem; }
+      .tg-msg { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">Daniel Halvarsson</a>
+  <div class="nav-links">
+    <a href="/research">Research</a>
+    <a href="/system">System</a>
+    <a href="/builds">Builds</a>
+  </div>
+</nav>
+
+<!-- ARTICLE -->
+<article class="article">
+
+  <div class="article-meta">Builds</div>
+  <div class="article-date">March 2026 · Daniel Halvarsson</div>
+
+  <h1>The Waking System</h1>
+  <p class="article-subtitle">How monitoring loops taught my AI agents to exercise judgment</p>
+
+  <!-- Section 1 -->
+  <h2>The Unsent Draft</h2>
+
+  <p>
+    Last month I wrote an important email about a PhD student proposal. I finished
+    it, felt satisfied, and went to pick up my kids from kindergarten and school.
+    The next morning — the day after the deadline — I realized I never hit send.
+  </p>
+
+  <p>
+    That was the moment I understood what my AI system needed to become. Not a
+    better tool. A colleague that watches when I can't.
+  </p>
+
+  <!-- Section 2 -->
+  <h2>What I Built</h2>
+
+  <p>
+    I run a personal AI system — six specialized agents managing email, calendar,
+    tasks, notes, relationships, and code. They coordinate through a decentralized
+    handshake protocol: each agent owns its domain and signals when it needs
+    another agent's capabilities. A thin router facilitates, never interprets.
+  </p>
+
+  <p>
+    The agents were capable but passive. They responded when asked. They didn't
+    watch.
+  </p>
+
+  <p>
+    So I gave each agent a monitoring loop — a periodic scan of its domain,
+    triggered by cron every 30 to 60 minutes, but governed by the agent's own
+    judgment about what deserves my attention.
+  </p>
+
+  <!-- Section 3 -->
+  <h2>How It Works</h2>
+
+  <p>
+    The email agent now scans Gmail for drafts older than two hours. It doesn't
+    alert me about every draft — it judges whether a draft looks like a forgotten
+    send. Addressed to a real person, substantive subject, aging past the point
+    of intent.
+  </p>
+
+  <p>When it finds one, I get a Telegram message:</p>
+
+  <div class="tg-msg">
+    <div class="tg-label">Telegram · Waking System</div>
+    <p>📧 Unsent draft to [person] about PhD proposal. 3 hours old.<br>Send or discard?</p>
+  </div>
+
+  <p>
+    I see it on my phone while making dinner. One tap. Crisis averted.
+  </p>
+
+  <p>Each agent has its own monitoring mandate:</p>
+
+  <ul>
+    <li>
+      The <strong>calendar agent</strong> watches for meetings in the next seven days that have
+      no preparation task. Three days out, it nudges. One day out, it insists.
+    </li>
+    <li>
+      The <strong>task agent</strong> notices when my outward queue — emails to send, people to
+      contact, things to share — has been neglected for five or more working days.
+      It says so directly.
+    </li>
+    <li>
+      The <strong>network agent</strong> flags relationships going stale. Four weeks without
+      contact to a key collaborator triggers a gentle prompt.
+    </li>
+    <li>
+      The <strong>note agent</strong> notices when I haven't narrated what I'm building in three
+      or more days. The narrations feed a weekly synthesis that drafts blog posts
+      from accumulated observations — including this one.
+    </li>
+  </ul>
+
+  <!-- Section 4 -->
+  <h2>The Design Principle</h2>
+
+  <p>
+    The monitoring loops are the most genuinely Hayekian component of the system.
+    No central monitor decides what to check. Each agent watches its own territory
+    using local knowledge no other agent has. The email agent understands what a
+    forgotten draft looks like. The calendar agent understands what an unprepared
+    meeting looks like. The task agent understands what a neglected queue looks like.
+  </p>
+
+  <p>
+    They exercise judgment and stay silent when nothing needs attention. The best
+    day is when I hear nothing from them.
+  </p>
+
+  <!-- Section 5 -->
+  <h2>What I Learned</h2>
+
+  <p>
+    Building the monitoring loops taught me something about the difference between
+    tools and colleagues. A tool does what you ask. A colleague notices what you
+    missed. The gap between the two is judgment — the ability to look at a domain
+    and decide, independently, that something needs attention.
+  </p>
+
+  <p>
+    My agents are not intelligent in any deep sense. They run heuristics against
+    API responses every thirty minutes. But the system they form — six independent
+    monitors, each scanning a different domain, each applying different judgment
+    criteria, all surfacing through one Telegram channel — creates something that
+    feels less like software and more like a team.
+  </p>
+
+  <p>
+    A team that never sleeps, never forgets to check, and never gets annoyed
+    when I don't act on their suggestions.
+  </p>
+
+  <p>
+    The unsent draft would have been caught. That's worth the entire build.
+  </p>
+
+  <div class="article-footer">
+    <a href="/system">More about the system architecture →</a>
+    <a href="/builds">All builds →</a>
+  </div>
+
+</article>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">danielhalvarsson.com</div>
+  <div class="footer-right">RATIO INSTITUTE · STOCKHOLM</div>
+</footer>
+
+</body>
+</html>

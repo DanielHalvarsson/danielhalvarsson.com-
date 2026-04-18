@@ -122,10 +122,7 @@
       margin-bottom: 2.2rem;
       max-width: 820px;
     }
-    h1 em {
-      font-style: italic;
-      color: var(--amber);
-    }
+    h1 em { font-style: italic; color: var(--amber); }
 
     .hero-meta {
       display: flex; flex-wrap: wrap; gap: 1rem 2.5rem;
@@ -229,7 +226,7 @@
       margin-bottom: 0.5rem;
     }
 
-    /* ── CARDS ── */
+    /* ── STATS CARDS ── */
     .cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -278,7 +275,6 @@
       background: var(--bg3);
       border: 1px solid var(--border);
       padding: 1.5rem 2rem;
-      position: relative;
     }
     .arch-layer-label {
       font-family: 'DM Mono', monospace;
@@ -322,72 +318,7 @@
       margin-top: 0.8rem;
       letter-spacing: 0.05em;
     }
-    .arch-paths-note span {
-      color: var(--amber);
-    }
-
-    /* ── HANDSHAKE FLOW ── */
-    .handshake-flow {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0;
-      margin: 2.5rem 0;
-      max-width: 520px;
-    }
-    .handshake-step {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      padding: 1rem 1.5rem;
-      width: 100%;
-    }
-    .handshake-step-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--amber);
-      margin-bottom: 0.3rem;
-    }
-    .handshake-step-text {
-      font-size: 0.88rem;
-      color: var(--text);
-      line-height: 1.5;
-    }
-    .handshake-connector {
-      width: 2px;
-      height: 20px;
-      background: var(--amber);
-      opacity: 0.4;
-      margin-left: 2rem;
-    }
-
-    /* ── METHOD GRID ── */
-    .method-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 1.5rem;
-      margin: 2.5rem 0;
-    }
-    .method-item {
-      padding: 1.5rem;
-      border: 1px solid var(--border);
-      border-top: 2px solid var(--amber);
-    }
-    .method-item h4 {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--amber);
-      margin-bottom: 0.6rem;
-    }
-    .method-item p {
-      font-size: 0.82rem;
-      color: var(--muted);
-      line-height: 1.65;
-      max-width: none;
-    }
+    .arch-paths-note span { color: var(--amber); }
 
     /* ── STACK LIST ── */
     .stack-list {
@@ -417,32 +348,6 @@
       color: var(--muted);
       line-height: 1.5;
     }
-
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.7rem 1.5rem;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-decoration: none;
-      border-radius: 2px;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background: var(--amber);
-      color: #0d1117;
-      border: 1px solid var(--amber);
-    }
-    .btn-primary:hover { background: #d4903a; border-color: #d4903a; }
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .btn-outline:hover { border-color: rgba(255,255,255,0.25); color: var(--white); }
 
     hr {
       border: none;
@@ -479,10 +384,7 @@
       transform: translateY(20px);
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .fade-in.visible {
-      opacity: 1;
-      transform: none;
-    }
+    .fade-in.visible { opacity: 1; transform: none; }
 
     @media (max-width: 640px) {
       nav { padding: 0 24px; }
@@ -490,7 +392,6 @@
       .hero { padding: 7rem 1.5rem 4rem; }
       section { padding: 4rem 1.5rem; }
       .arch-layer { padding: 1.2rem 1.5rem; }
-      .arch-agents { gap: 0.4rem; }
       .stack-row { grid-template-columns: 1fr; gap: 0.3rem; }
       .callout { padding: 1.5rem; }
       .tg-msg { max-width: 100%; }
@@ -499,29 +400,24 @@
 </head>
 <body>
 
-<!-- NAV -->
 <nav>
   <a href="/" class="nav-logo">Daniel Halvarsson</a>
   <div class="nav-links">
     <a href="/research">Research</a>
     <a href="/presentations">Presentations</a>
-    <a href="/builds">Builds</a>
+    <a href="/builds" class="active">Builds</a>
     <a href="/write">Write</a>
     <a href="https://assistant.danielhalvarsson.com">Assistant</a>
   </div>
 </nav>
 
-<!-- HERO -->
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-content fade-in">
-    <div class="hero-tag">Personal assistant </div>
-    <h1>
-      A decentralized agentic system
-    </h1>
+    <div class="hero-tag">Build · March 2026</div>
+    <h1>A decentralized agentic system</h1>
     <p style="font-size: 1.05rem; max-width: 640px; margin-bottom: 2rem;">
-      I built a system to help me manage my work and life. The idea is for it to keep track of things I need to do, remind me when I forget, and help me get things done. There are six
-      specialized agents (email, calendar, tasks, notes, network, and code). Instead of having a central orchestrator (planner) who makes the calls, spawns and coordinates the agents, the system is decentralized. Each agent keeps track on their own domain, exercise judgment and signals their own coordination needs through a thin router protocol. 
+      I built a system to help me manage my work and life. The idea is for it to keep track of things I need to do, remind me when I forget, and help me get things done. There are six specialized agents (email, calendar, tasks, notes, network, and code). Instead of having a central orchestrator who makes the calls, spawns and coordinates the agents, the system is decentralized. Each agent keeps track of their own domain, exercises judgment, and signals their own coordination needs through a thin router protocol.
     </p>
     <p style="font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-style: italic; color: var(--muted); margin-bottom: 2.5rem;">
       Built by Claude Code.
@@ -543,26 +439,21 @@
   </div>
 </section>
 
-
-<!-- 03 — THE ARCHITECTURE -->
 <section>
   <div class="container">
-    <div class="section-label">03 — The Architecture</div>
+    <div class="section-label">01 — The Architecture</div>
     <h2>Four layers</h2>
 
     <div class="arch-diagram fade-in">
-      <!-- Layer 1: Telegram -->
       <div class="arch-layer">
         <div class="arch-layer-label">Telegram</div>
-        <div class="arch-layer-desc"> To communicate with the System, I use Telegram. One bot, one conversation.    
-        </div>
-        </div>
+        <div class="arch-layer-desc">To communicate with the system, I use Telegram. One bot, one conversation.</div>
+      </div>
       <div class="arch-connector"></div>
 
-      <!-- Layer 2: Router -->
       <div class="arch-layer">
         <div class="arch-layer-label">Router — Classifies and Facilitates</div>
-        <div class="arch-layer-desc"> Reads incoming messages from Telegram for intent and dispatches to the right agent. Facilitates handshakes between agents but don't interprets their content. </div>
+        <div class="arch-layer-desc">Reads incoming messages for intent and dispatches to the right agent. Facilitates handshakes between agents but doesn't interpret their content.</div>
         <div class="arch-agents" style="margin-top: 0.6rem;">
           <span class="arch-agent-tag" style="background: rgba(107,170,124,0.1); border-color: rgba(107,170,124,0.2); color: var(--green);">Morning Prompt</span>
           <span class="arch-agent-tag" style="background: rgba(107,170,124,0.1); border-color: rgba(107,170,124,0.2); color: var(--green);">Evening Prompt</span>
@@ -570,7 +461,6 @@
       </div>
       <div class="arch-connector"></div>
 
-      <!-- Layer 3: Agents -->
       <div class="arch-layer">
         <div class="arch-layer-label">Agent Layer — Domain Ownership</div>
         <div class="arch-agents">
@@ -587,13 +477,11 @@
       </div>
       <div class="arch-connector"></div>
 
-      <!-- Layer 4: Governance -->
       <div class="arch-layer">
-        <div class="arch-layer-label">Governance & Infrastructure</div>
-        <div class="arch-layer-desc">To keep track of potentially dangerous actions committed by the agents, there is a governance layer that classifies agentic actions into three trust tiers. Dangerous actions (like sending emails) require my approval.
-        </div>
-        <div class="arch-agents" sagenttyle="margin-top: 0.6rem;">
-          <span class="arch--tag" style="background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--muted);">Auto-Allow</span>
+        <div class="arch-layer-label">Governance &amp; Infrastructure</div>
+        <div class="arch-layer-desc">A governance layer classifies agentic actions into three trust tiers. Dangerous actions require my approval via Telegram.</div>
+        <div class="arch-agents" style="margin-top: 0.6rem;">
+          <span class="arch-agent-tag" style="background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--muted);">Auto-Allow</span>
           <span class="arch-agent-tag" style="background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--muted);">Notify</span>
           <span class="arch-agent-tag" style="background: rgba(255,255,255,0.04); border-color: var(--border); color: var(--muted);">Require Approval</span>
         </div>
@@ -602,21 +490,12 @@
   </div>
 </section>
 
-
-<!-- 05 — THE DAY-TYPE SYSTEM -->
 <section style="background: var(--bg2);">
   <div class="container">
-    <div class="section-label">05 — The Day-Type System</div>
+    <div class="section-label">02 — The Day-Type System</div>
     <h2>The navigator's OS</h2>
     <p style="margin-top: 1.5rem;">
-      I don't work from schedules or to-do lists. I work the way I train
-      at the gym: I know which domain I'm working in today, I start with
-      whatever feels right, and each action creates the energy for the next.
-      I've never had a fixed set of exercises before starting a session.
-      Not once in my life.
-    </p>
-    <p>
-      The system is built for this. Every morning at 07:30, it asks:
+      I don't work from schedules or to-do lists. I work the way I train at the gym: I know which domain I'm working in today, I start with whatever feels right, and each action creates the energy for the next. The system is built for this. Every morning at 07:30, it asks:
     </p>
 
     <div class="tg-msg fade-in" style="margin: 2rem 0;">
@@ -632,28 +511,17 @@
     </div>
 
     <p>
-      I pick one. The task agent surfaces the queue for that day type.
-      I start with whatever feels like the right first set. The system
-      doesn't schedule my day — it shows me the equipment and lets me navigate.
-    </p>
-    <p>
-      This sounds unstructured. It is. It also works, for the same reason
-      my gym approach works: deep internalized knowledge of a domain
-      eliminates the need for a plan. The system's job is to make sure the
-      right options are visible, not to choose between them.
+      I pick one. The task agent surfaces the queue for that day type. The system doesn't schedule my day — it shows me the equipment and lets me navigate.
     </p>
   </div>
 </section>
 
-<!-- 06 — MOBILE DISPATCH -->
 <section>
   <div class="container">
-    <div class="section-label">06 — Mobile Dispatch</div>
+    <div class="section-label">03 — Mobile Dispatch</div>
     <h2>The server never sleeps</h2>
     <p style="margin-top: 1.5rem;">
-      The entire system runs on a server in my apartment — a Lenovo X1 Carbon
-      running Ubuntu, always on, always connected. I interact with it through
-      Telegram on my phone.
+      The entire system runs on a server in my apartment — a Lenovo X1 Carbon running Ubuntu, always on, always connected. I interact with it through Telegram on my phone.
     </p>
 
     <div class="tg-msg fade-in" style="margin: 2rem 0;">
@@ -662,38 +530,19 @@
     </div>
 
     <p>
-      The code agent resolves the repo, starts a Claude Code session on the server,
-      and reports back when it's done. I read the result while cooking dinner.
-    </p>
-
-    <div class="tg-msg fade-in" style="margin: 2rem 0;">
-      <div class="tg-label">Daniel → Waking System</div>
-      <p>homepage: fix this. <span style="color: var(--muted); font-style: italic;">[screenshot attached]</span></p>
-    </div>
-
-    <p>
-      The system identifies the file, makes the edit, commits, and confirms.
-    </p>
-    <p>
-      When I want to know the state of my world, I message "brief me" and
-      get an aggregated summary from all six agents: today's day type, my
-      queue, monitoring alerts, calendar events, narration status, and any
-      overnight session results. I read it while walking the kids to school.
+      The code agent resolves the repo, starts a Claude Code session on the server, and reports back when it's done. I read the result while cooking dinner.
     </p>
 
     <div class="callout fade-in">
-      <p>
-        The gap between "I should do this" and "it's done" collapses.
-      </p>
+      <p>The gap between "I should do this" and "it's done" collapses.</p>
     </div>
   </div>
 </section>
 
-<!-- 08 — COLOPHON -->
 <section>
   <div class="container">
-    <div class="section-label">08 — Colophon</div>
-    <h2>Technical summary</h2>
+    <div class="section-label">04 — Technical Summary</div>
+    <h2>Stack &amp; numbers</h2>
 
     <div class="cards fade-in">
       <div class="card">
@@ -716,21 +565,10 @@
         <div class="card-title">Governance Tiers</div>
         <div class="card-desc">Auto-allow · Notify · Approve via Telegram</div>
       </div>
-      <div class="card">
-        <div class="card-num amber">5</div>
-        <div class="card-title">Monitoring Loops</div>
-        <div class="card-desc">Scanning domains every 30–60 minutes.</div>
-      </div>
-      <div class="card">
-        <div class="card-num muted">1</div>
-        <div class="card-title">Telegram Bot</div>
-        <div class="card-desc">One interface for everything.</div>
-      </div>
     </div>
 
     <hr />
 
-    <h3>Stack</h3>
     <div class="stack-list fade-in">
       <div class="stack-row">
         <div class="stack-key">Agents</div>
@@ -764,7 +602,6 @@
   </div>
 </section>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-left">danielhalvarsson.com</div>
   <div class="footer-right">RATIO INSTITUTE · STOCKHOLM</div>
@@ -773,19 +610,11 @@
 <script>
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        observer.unobserve(e.target);
-      }
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
     });
   }, { threshold: 0.1 });
-
   document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
-
-  setTimeout(() => {
-    document.querySelector('.hero .fade-in')?.classList.add('visible');
-  }, 100);
+  setTimeout(() => document.querySelector('.hero .fade-in')?.classList.add('visible'), 100);
 </script>
-
 </body>
 </html>
